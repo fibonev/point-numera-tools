@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ROI Quick Check &mdash; Hire | Point Numera</title>
+    <meta
+      name="description"
+      content="Sanity-check ROI for a hire in under 3 minutes. See net impact, payback, and a simple 12-month ROI view. Free baseline tool."
+    />
+    <link
+      rel="canonical"
+      href="https://pointnumera.com/tools/roi-quick-check/"
+    />
+    <meta
+      property="og:title"
+      content="ROI Quick Check &mdash; Hire | Point Numera"
+    />
+    <meta
+      property="og:description"
+      content="Sanity-check ROI for a hire in under 3 minutes. See net impact, payback, and a simple 12-month ROI view. Free baseline tool."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://pointnumera.com/tools/roi-quick-check/"
+    />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="../shared/ui.css" />
+    <script src="../shared/capture.js" defer></script>
+    <style>
+      .page-wrap {
+        padding-bottom: var(--space-xxl);
+      }
+      .calc-grid {
+        display: grid;
+        gap: var(--space-lg);
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        align-items: start;
+      }
+      .results-card {
+        margin: 0;
+        scroll-margin-top: 80px;
+      }
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        border-radius: var(--r-sm);
+        font-weight: 600;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface-2);
+      }
+      .status-risk {
+        color: #b00020;
+        border-color: rgba(176, 0, 32, 0.22);
+      }
+      .status-tight {
+        color: #b36b00;
+        border-color: rgba(179, 107, 0, 0.28);
+      }
+      .status-healthy {
+        color: var(--color-primary);
+        border-color: rgba(14, 79, 71, 0.28);
+      }
+      .error-text {
+        color: #b00020;
+        font-weight: 600;
+        margin-top: var(--space-xs);
+      }
+      .result-grid {
+        display: grid;
+        gap: var(--space-sm);
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        margin-top: var(--space-sm);
+      }
+      .result-item {
+        padding: var(--space-sm);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-sm);
+        background: var(--color-surface-2);
+      }
+      .result-item h4 {
+        margin: 0 0 6px;
+        font-size: 0.95rem;
+        color: var(--color-muted);
+      }
+      .result-value {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--color-text);
+      }
+      .insights {
+        margin-top: var(--space-sm);
+        color: var(--color-muted);
+      }
+      .cta-card {
+        margin-top: var(--space-xl);
+      }
+      .faq-list {
+        margin-top: var(--space-md);
+        display: grid;
+        gap: var(--space-sm);
+      }
+      .faq-item {
+        padding: var(--space-md);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-sm);
+        background: var(--color-surface);
+      }
+      .faq-item strong {
+        display: block;
+        margin-bottom: var(--space-2xs);
+      }
+      .intro-list {
+        list-style: disc;
+        padding-left: 1.2rem;
+        color: var(--color-muted);
+      }
+      .disclaimer {
+        margin-top: var(--space-sm);
+        color: var(--color-muted);
+      }
+      #roi-hire-capture {
+        display: none;
+        margin-top: var(--space-xs);
+        padding-top: var(--space-md);
+        padding-bottom: var(--space-md);
+      }
+      .section-compact {
+        padding: var(--space-md) 0;
+      }
+      .section-divider {
+        border-top: 1px solid var(--color-border);
+        padding-top: var(--space-sm);
+        margin-top: var(--space-sm);
+      }
+      .results-highlight {
+        animation: pulseOutline 0.9s ease;
+      }
+      @keyframes pulseOutline {
+        0% {
+          box-shadow: 0 0 0 0 rgba(14, 79, 71, 0.25);
+        }
+        60% {
+          box-shadow: 0 0 0 8px rgba(14, 79, 71, 0.08);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(14, 79, 71, 0);
+        }
+      }
+      @media (min-width: 769px) {
+        .section-compact {
+          padding: var(--space-lg) 0;
+        }
+      }
+      .results-cue {
+        display: none;
+        font-size: 0.9rem;
+        color: var(--color-muted);
+        margin-top: var(--space-xs);
+      }
+      @media (max-width: 480px) {
+        .calc-card,
+        .results-card,
+        .cta-card,
+        .example-card {
+          padding: var(--space-md);
+        }
+        .section-compact {
+          padding: var(--space-md) 0;
+        }
+        .calc-grid {
+          gap: var(--space-xl);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top-nav">
+      <div class="container">
+        <a class="brand" href="/tools/">
+          <img src="../shared/logo.svg" alt="Point Numera logo" />
+        </a>
+        <nav class="nav-links">
+          <a class="nav-link" data-nav href="/tools/">Tools Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-wrap">
+      <section class="container hero">
+        <h1>ROI Quick Check &mdash; Hire</h1>
+        <p class="lead">
+          Sanity-check whether a hire pays back on your current assumptions.
+          This quick check shows net impact, payback, and a simple 12-month ROI
+          view.
+        </p>
+        <ul class="intro-list">
+          <li>
+            Outputs: net impact, payback period, 12-month ROI, break-even month
+          </li>
+          <li>
+            Baseline only (excludes taxes, team dependencies, execution risk)
+          </li>
+        </ul>
+      </section>
+
+      <section class="container section section-compact">
+        <div class="calc-grid">
+          <div class="card calc-card">
+            <form id="roi-hire-form" class="form">
+              <div class="input-group">
+                <label for="roiHireRoleCost">Role monthly cost (&euro;)</label>
+                <input
+                  id="roiHireRoleCost"
+                  name="roiHireRoleCost"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="e.g., 6500"
+                />
+                <div class="helper-text">
+                  Gross salary plus employer costs (rough estimate).
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="roiHireUplift"
+                  >Expected monthly revenue uplift (&euro;)</label
+                >
+                <input
+                  id="roiHireUplift"
+                  name="roiHireUplift"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="e.g., 12000"
+                />
+                <div class="helper-text">
+                  Or cost savings if this role is non-revenue.
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="roiHireRampMonths"
+                  >Time to full impact (months)</label
+                >
+                <input
+                  id="roiHireRampMonths"
+                  name="roiHireRampMonths"
+                  type="number"
+                  min="0"
+                  step="1"
+                  required
+                  placeholder="e.g., 2"
+                />
+                <div class="helper-text">Ramp-up period.</div>
+              </div>
+
+              <div class="input-group">
+                <label for="roiHireOneOffCosts"
+                  >One-off hiring costs (&euro;)</label
+                >
+                <input
+                  id="roiHireOneOffCosts"
+                  name="roiHireOneOffCosts"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="e.g., 8000"
+                />
+                <div class="helper-text">
+                  Recruiter, onboarding, tools, setup.
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="roiHireConfidence"
+                  >Confidence level (optional)</label
+                >
+                <select id="roiHireConfidence" name="roiHireConfidence">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+
+              <div
+                id="roiHireError"
+                class="error-text"
+                aria-live="polite"
+                style="display: none"
+              ></div>
+
+              <button type="submit" class="btn btn-primary">
+                Calculate ROI
+              </button>
+              <div id="roiHireResultsCue" class="results-cue">
+                Results below 
+              </div>
+            </form>
+          </div>
+
+          <div id="roiHireResults" class="card results-card" aria-live="polite">
+            <div id="roiHireResultsAnchor" aria-hidden="true"></div>
+            <div class="result-grid" aria-live="polite">
+              <div class="result-item">
+                <h4>Monthly net impact</h4>
+                <div id="roiHireMonthlyNet" class="result-value">-</div>
+              </div>
+              <div class="result-item">
+                <h4>Payback period</h4>
+                <div id="roiHirePayback" class="result-value">-</div>
+              </div>
+              <div class="result-item">
+                <h4>12-month ROI %</h4>
+                <div id="roiHireRoi12" class="result-value">-</div>
+              </div>
+              <div class="result-item">
+                <h4>Break-even month</h4>
+                <div id="roiHireBreakEven" class="result-value">-</div>
+              </div>
+            </div>
+
+            <div
+              class="flex space-between gap-md"
+              style="
+                flex-wrap: wrap;
+                margin-top: var(--space-sm);
+                border-top: 1px solid var(--color-border);
+                padding-top: var(--space-sm);
+              "
+            >
+              <span id="roiHireStatusLabel" class="status-badge"
+                >Status: -</span
+              >
+              <div class="text-subtle" id="roiHireResultsHelper">
+                Enter inputs to see results.
+              </div>
+            </div>
+
+            <div class="insights">
+              <div id="roiHireInsightLine1">-</div>
+              <div id="roiHireInsightLine2">-</div>
+            </div>
+            <p class="disclaimer">
+              Baseline only. This quick check doesn't account for taxes, team
+              dependencies, or execution risk.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="roi-hire-capture"
+        class="container section section-compact cta-card"
+      >
+        <div class="card section-divider capture-card">
+          <div class="capture-content">
+            <h3>Get the expanded ROI hiring notes</h3>
+            <p>
+              I'll send you a short checklist to sanity-check hiring
+              assumptions, ramp-up time, and payback risk.
+            </p>
+          </div>
+          <form
+            id="roiHireCaptureForm"
+            class="capture-form"
+            data-capture
+            action="https://assets.mailerlite.com/jsonp/1801866/forms/175074872823645660/subscribe"
+            method="post"
+          >
+            <input type="hidden" name="ml-submit" value="1" />
+            <input type="hidden" name="anticsrf" value="true" />
+            <input
+              type="hidden"
+              name="fields[source_tool]"
+              value="roi_quick_check_hire"
+            />
+            <div class="row-form">
+              <div class="capture-fields">
+                <div class="form-row capture-hide-on-success">
+                  <label for="roiHireCaptureName">Name (optional)</label>
+                  <input
+                    id="roiHireCaptureName"
+                    type="text"
+                    name="fields[name]"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div class="form-row capture-hide-on-success">
+                  <label for="roiHireCaptureEmail">Email</label>
+                  <input
+                    id="roiHireCaptureEmail"
+                    type="email"
+                    name="fields[email]"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+                <div class="form-row checkbox-row capture-hide-on-success">
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="fields[consent_checkbox]"
+                      value="yes"
+                      required
+                    />
+                    <span
+                      >I agree to receive the notes and occasional
+                      updates.</span
+                    >
+                  </label>
+                </div>
+                <div class="form-actions">
+                  <button
+                    type="submit"
+                    class="btn btn-primary capture-hide-on-success"
+                  >
+                    Send it to me
+                  </button>
+                  <a
+                    class="btn btn-secondary"
+                    href="#"
+                    id="roiHireCaptureBookingLink"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Book a 15-min ROI sanity check</a
+                  >
+                </div>
+              </div>
+              <div class="form-msg" aria-live="polite"></div>
+            </div>
+            <div class="row-success" style="display: none">
+              <div
+                class="form-msg form-msg-success"
+                data-static
+                aria-live="polite"
+              >
+                <div><strong>&#x2705; Sent!</strong></div>
+                <div class="helper-text">
+                  Check your inbox (and spam). If you want a second opinion on
+                  this hire, you can also book a 15-minute ROI sanity check
+                  below.
+                </div>
+              </div>
+              <div class="form-actions">
+                <a
+                  class="btn btn-secondary"
+                  id="roiHireBookingInline"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Book a 15-min ROI sanity check</a
+                >
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section
+        id="roi-hire-cta-secondary"
+        class="container section section-compact cta-card"
+      >
+        <div class="card">
+          <h3>Want the ROI hiring notes?</h3>
+          <p class="lead">Get a checklist to validate assumptions.</p>
+          <div class="flex gap-sm" style="flex-wrap: wrap">
+            <a
+              id="roiHireNotesLink"
+              class="btn btn-primary"
+              href="#roi-hire-capture"
+              >Get the notes</a
+            >
+            <a
+              id="roiHireBookingLink"
+              class="btn btn-secondary"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Book a 15-min ROI sanity check</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="container section section-compact">
+        <h2>FAQ</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <strong>What counts as revenue uplift?</strong>
+            <p>
+              Incremental revenue you expect because the hire improves pipeline,
+              conversion, retention, or upsell. Use conservative numbers.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>What about non-revenue roles?</strong>
+            <p>
+              Use cost savings or avoided spend as the uplift. If impact is
+              indirect, keep assumptions conservative.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>Does this include taxes?</strong>
+            <p>No. This is a baseline and doesn't include tax effects.</p>
+          </div>
+          <div class="faq-item">
+            <strong>When does hiring not make sense?</strong>
+            <p>
+              If monthly net impact is negative or payback is beyond a year,
+              recheck assumptions before hiring.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="roiHireScrollCue" class="pn-scroll-cue">
+      <span id="roiHireScrollCueText" class="pn-scroll-cue-text"
+        > Results & ROI notes below</span
+      >
+      <span class="pn-scroll-cue-action">Jump</span>
+    </div>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What counts as revenue uplift?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Incremental revenue you expect because the hire improves pipeline, conversion, retention, or upsell. Use conservative numbers."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What about non-revenue roles?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Use cost savings or avoided spend as the uplift. If impact is indirect, keep assumptions conservative."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does this include taxes?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. This is a baseline and doesn't include tax effects."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "When does hiring not make sense?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "If monthly net impact is negative or payback is beyond a year, recheck assumptions before hiring."
+            }
+          }
+        ]
+      }
+    </script>
+
+    <script>
+      const BOOKING_URL = "https://cal.com/pointnumera/roi-sanity-check-hiring";
+      const ROI_HIRE_NOTES_URL =
+        "https://preview.mailerlite.io/forms/1801866/175074872823645660/share";
+
+      const roiHireForm = document.getElementById("roi-hire-form");
+      const roiHireErrorEl = document.getElementById("roiHireError");
+      const roiHireResultsEl = document.getElementById("roiHireResults");
+      const roiHireResultsAnchor = document.getElementById(
+        "roiHireResultsAnchor"
+      );
+      const roiHireStatusLabel = document.getElementById("roiHireStatusLabel");
+      const roiHireMonthlyNetEl = document.getElementById("roiHireMonthlyNet");
+      const roiHirePaybackEl = document.getElementById("roiHirePayback");
+      const roiHireRoi12El = document.getElementById("roiHireRoi12");
+      const roiHireBreakEvenEl = document.getElementById("roiHireBreakEven");
+      const roiHireInsightLine1 = document.getElementById(
+        "roiHireInsightLine1"
+      );
+      const roiHireInsightLine2 = document.getElementById(
+        "roiHireInsightLine2"
+      );
+      const roiHireHelperText = document.getElementById("roiHireResultsHelper");
+      const roiHireCaptureSection = document.getElementById("roi-hire-capture");
+      const roiHireResultsCue = document.getElementById("roiHireResultsCue");
+      const roiHireScrollCue = document.getElementById("roiHireScrollCue");
+      const roiHireScrollCueText = document.getElementById(
+        "roiHireScrollCueText"
+      );
+      const roiHireCtaSecondary = document.getElementById(
+        "roi-hire-cta-secondary"
+      );
+      const roiHireBookingLink = document.getElementById("roiHireBookingLink");
+      const roiHireBookingInline = document.getElementById(
+        "roiHireBookingInline"
+      );
+      const roiHireCaptureBookingLink = document.getElementById(
+        "roiHireCaptureBookingLink"
+      );
+      const roiHireNotesLink = document.getElementById("roiHireNotesLink");
+      let roiHireScrollCueStep = 0;
+      let roiHireCueTimeout = null;
+      let roiHireScrollHandlerAttached = false;
+      const roiHireRootStyle = document.documentElement.style;
+
+      roiHireBookingLink.href = BOOKING_URL;
+      roiHireBookingInline.href = BOOKING_URL;
+      if (roiHireCaptureBookingLink)
+        roiHireCaptureBookingLink.href = BOOKING_URL;
+      if (roiHireNotesLink) roiHireNotesLink.href = ROI_HIRE_NOTES_URL;
+
+      const fmtCurrency = (value) =>
+        new Intl.NumberFormat("en-IE", {
+          style: "currency",
+          currency: "EUR",
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        }).format(value);
+
+      const fmtPercent = (value) => `${value.toFixed(0)}%`;
+
+      const setError = (msg) => {
+        roiHireErrorEl.textContent = msg;
+        roiHireErrorEl.style.display = msg ? "block" : "none";
+      };
+
+      const setStatus = (status) => {
+        roiHireStatusLabel.classList.remove(
+          "status-risk",
+          "status-tight",
+          "status-healthy"
+        );
+        if (status === "risk") {
+          roiHireStatusLabel.textContent = "Status: At risk";
+          roiHireStatusLabel.classList.add("status-risk");
+        } else if (status === "tight") {
+          roiHireStatusLabel.textContent = "Status: Tight";
+          roiHireStatusLabel.classList.add("status-tight");
+        } else {
+          roiHireStatusLabel.textContent = "Status: Healthy";
+          roiHireStatusLabel.classList.add("status-healthy");
+        }
+      };
+
+      const resetPlaceholders = () => {
+        roiHireMonthlyNetEl.textContent = "-";
+        roiHirePaybackEl.textContent = "-";
+        roiHireRoi12El.textContent = "-";
+        roiHireBreakEvenEl.textContent = "-";
+        roiHireStatusLabel.textContent = "Status: -";
+        roiHireHelperText.textContent = "Enter inputs to see results.";
+        roiHireInsightLine1.textContent = "-";
+        roiHireInsightLine2.textContent = "-";
+        roiHireStatusLabel.classList.remove(
+          "status-risk",
+          "status-tight",
+          "status-healthy"
+        );
+        if (roiHireCaptureSection) roiHireCaptureSection.style.display = "none";
+        if (roiHireResultsCue) roiHireResultsCue.style.display = "none";
+        if (roiHireCueTimeout) clearTimeout(roiHireCueTimeout);
+        if (roiHireScrollHandlerAttached) {
+          window.removeEventListener("scroll", handleCueScroll);
+          roiHireScrollHandlerAttached = false;
+        }
+        hideScrollCue();
+      };
+
+      resetPlaceholders();
+
+      roiHireForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const roleMonthlyCost = parseFloat(roiHireForm.roiHireRoleCost.value);
+        const expectedMonthlyUplift = parseFloat(
+          roiHireForm.roiHireUplift.value
+        );
+        const timeToFullImpact = parseFloat(
+          roiHireForm.roiHireRampMonths.value
+        );
+        const oneOffHiringCosts = parseFloat(
+          roiHireForm.roiHireOneOffCosts.value
+        );
+        const confidence = roiHireForm.roiHireConfidence.value;
+
+        if (
+          [
+            roleMonthlyCost,
+            expectedMonthlyUplift,
+            timeToFullImpact,
+            oneOffHiringCosts,
+          ].some((v) => Number.isNaN(v) || v < 0)
+        ) {
+          setError("Please enter values greater than or equal to 0.");
+          resetPlaceholders();
+          return;
+        }
+
+        setError("");
+
+        const monthlyNet = expectedMonthlyUplift - roleMonthlyCost;
+        roiHireMonthlyNetEl.textContent = fmtCurrency(monthlyNet);
+
+        let status = "healthy";
+        let breakEvenMonth = null;
+        let paybackPeriodMonths = null;
+
+        if (monthlyNet <= 0) {
+          roiHirePaybackEl.textContent = "Not achievable";
+          roiHireBreakEvenEl.textContent = "Not achievable";
+          status = "risk";
+        } else {
+          const breakEvenMonthsCore = oneOffHiringCosts / monthlyNet;
+          paybackPeriodMonths = timeToFullImpact + breakEvenMonthsCore;
+          breakEvenMonth = Math.ceil(paybackPeriodMonths);
+
+          roiHirePaybackEl.textContent = `${paybackPeriodMonths.toFixed(
+            1
+          )} months`;
+          roiHireBreakEvenEl.textContent = `Month ${breakEvenMonth}`;
+
+          if (paybackPeriodMonths <= 6) {
+            status = "healthy";
+          } else if (paybackPeriodMonths <= 12) {
+            status = "tight";
+          } else {
+            status = "risk";
+          }
+        }
+
+        const effectiveMonths = Math.max(0, 12 - timeToFullImpact);
+        const netGain12 = monthlyNet * effectiveMonths;
+        if (oneOffHiringCosts === 0) {
+          roiHireRoi12El.textContent = "\u2014";
+        } else {
+          const roiPercent =
+            ((netGain12 - oneOffHiringCosts) / oneOffHiringCosts) * 100;
+          roiHireRoi12El.textContent = Number.isFinite(roiPercent)
+            ? fmtPercent(roiPercent)
+            : "\u2014";
+        }
+
+        setStatus(status);
+
+        if (monthlyNet <= 0) {
+          roiHireInsightLine1.textContent =
+            "This hire costs more than it adds each month.";
+          roiHireInsightLine2.textContent = `If uplift is below ${fmtCurrency(
+            roleMonthlyCost
+          )}/month, this stays risky.`;
+        } else if (status === "healthy") {
+          roiHireInsightLine1.textContent = `This hire pays back in ~${paybackPeriodMonths.toFixed(
+            1
+          )} months.`;
+          const windowMonths = 6 - timeToFullImpact;
+          if (windowMonths <= 0) {
+            roiHireInsightLine2.textContent =
+              "Fastest lever: shorten ramp-up or increase uplift.";
+          } else {
+            const requiredNet = oneOffHiringCosts / windowMonths;
+            const requiredUplift = roleMonthlyCost + requiredNet;
+            roiHireInsightLine2.textContent = `If uplift is lower than ${fmtCurrency(
+              requiredUplift
+            )}/month, this becomes tight.`;
+          }
+        } else if (status === "tight") {
+          roiHireInsightLine1.textContent = `This hire pays back in ~${paybackPeriodMonths.toFixed(
+            1
+          )} months.`;
+          const windowMonths = 12 - timeToFullImpact;
+          if (windowMonths <= 0) {
+            roiHireInsightLine2.textContent =
+              "Fastest lever: shorten ramp-up or increase uplift.";
+          } else {
+            const requiredNet = oneOffHiringCosts / windowMonths;
+            const requiredUplift = roleMonthlyCost + requiredNet;
+            roiHireInsightLine2.textContent = `If uplift is lower than ${fmtCurrency(
+              requiredUplift
+            )}/month, this becomes risky.`;
+          }
+        } else {
+          roiHireInsightLine1.textContent = `Payback is slow (~${paybackPeriodMonths.toFixed(
+            1
+          )} months).`;
+          const windowMonths = 12 - timeToFullImpact;
+          if (windowMonths <= 0) {
+            roiHireInsightLine2.textContent =
+              "Fastest lever: shorten ramp-up or increase uplift.";
+          } else {
+            const requiredNet = oneOffHiringCosts / windowMonths;
+            const requiredUplift = roleMonthlyCost + requiredNet;
+            roiHireInsightLine2.textContent = `To get payback under 12 months, uplift needs to be about ${fmtCurrency(
+              requiredUplift
+            )}/month.`;
+          }
+        }
+
+        roiHireHelperText.textContent = "Updated results based on your inputs.";
+        if (roiHireCaptureSection)
+          roiHireCaptureSection.style.display = "block";
+        if (roiHireCtaSecondary) roiHireCtaSecondary.style.display = "none";
+
+        const showCue = () => {
+          if (!roiHireResultsCue) return;
+          roiHireResultsCue.style.display = "block";
+          if (roiHireCueTimeout) clearTimeout(roiHireCueTimeout);
+          roiHireCueTimeout = setTimeout(hideCue, 3000);
+          if (!roiHireScrollHandlerAttached) {
+            window.addEventListener("scroll", handleCueScroll);
+            roiHireScrollHandlerAttached = true;
+          }
+        };
+
+        const hideCue = () => {
+          if (!roiHireResultsCue) return;
+          roiHireResultsCue.style.display = "none";
+          if (roiHireCueTimeout) clearTimeout(roiHireCueTimeout);
+          if (roiHireScrollHandlerAttached) {
+            window.removeEventListener("scroll", handleCueScroll);
+            roiHireScrollHandlerAttached = false;
+          }
+        };
+
+        function handleCueScroll() {
+          const y = window.scrollY + window.innerHeight * 0.25;
+          if (y >= roiHireResultsEl.offsetTop) {
+            hideCue();
+          }
+        }
+
+        showCue();
+        showScrollCue();
+      });
+
+      function showScrollCue() {
+        if (!roiHireScrollCue || !roiHireScrollCueText) return;
+        roiHireScrollCueStep = 0;
+        roiHireScrollCueText.textContent = " Results & ROI notes below";
+        roiHireScrollCue.style.display = "flex";
+        document.body.classList.add("pn-scroll-padding");
+        const cueHeight = roiHireScrollCue.getBoundingClientRect().height || 0;
+        roiHireRootStyle.setProperty(
+          "--pn-sticky-offset",
+          `${cueHeight + 16}px`
+        );
+      }
+
+      function hideScrollCue() {
+        if (!roiHireScrollCue) return;
+        roiHireScrollCue.style.display = "none";
+        document.body.classList.remove("pn-scroll-padding");
+        roiHireRootStyle.setProperty("--pn-sticky-offset", "0px");
+      }
+
+      if (roiHireScrollCue) {
+        roiHireScrollCue.addEventListener("click", () => {
+          if (roiHireScrollCueStep === 0) {
+            if (roiHireResultsAnchor) {
+              roiHireResultsAnchor.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            } else {
+              window.scrollTo({
+                top:
+                  roiHireResultsEl.getBoundingClientRect().top +
+                  window.scrollY -
+                  70,
+                behavior: "smooth",
+              });
+            }
+            roiHireScrollCueStep = 1;
+            if (roiHireScrollCueText)
+              roiHireScrollCueText.textContent = " Get the ROI notes";
+          } else {
+            if (roiHireCaptureSection) {
+              roiHireCaptureSection.style.display = "block";
+              const targetTop =
+                roiHireCaptureSection.getBoundingClientRect().top +
+                window.scrollY -
+                70;
+              window.scrollTo({ top: targetTop, behavior: "smooth" });
+            }
+            hideScrollCue();
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

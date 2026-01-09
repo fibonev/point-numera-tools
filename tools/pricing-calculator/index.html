@@ -1,0 +1,828 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pricing Calculator for Founders | Point Numera</title>
+    <meta
+      name="description"
+      content="Check pricing profitability in under 3 minutes. See margin, break-even units, and profit at expected sales. Free baseline tool."
+    />
+    <link
+      rel="canonical"
+      href="https://pointnumera.com/tools/pricing-calculator/"
+    />
+    <meta
+      property="og:title"
+      content="Pricing Calculator for Founders | Point Numera"
+    />
+    <meta
+      property="og:description"
+      content="Check pricing profitability in under 3 minutes. See margin, break-even units, and profit at expected sales. Free baseline tool."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://pointnumera.com/tools/pricing-calculator/"
+    />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="../shared/ui.css" />
+    <script src="../shared/capture.js" defer></script>
+    <style>
+      .page-wrap {
+        padding-bottom: var(--space-xxl);
+      }
+      .calc-grid {
+        display: grid;
+        gap: var(--space-lg);
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        align-items: start;
+      }
+      .results-card {
+        margin: 0;
+        scroll-margin-top: 80px;
+      }
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        border-radius: var(--r-sm);
+        font-weight: 600;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface-2);
+      }
+      .status-risk {
+        color: #b00020;
+        border-color: rgba(176, 0, 32, 0.22);
+      }
+      .status-tight {
+        color: #b36b00;
+        border-color: rgba(179, 107, 0, 0.28);
+      }
+      .status-healthy {
+        color: var(--color-primary);
+        border-color: rgba(14, 79, 71, 0.28);
+      }
+      .error-text {
+        color: #b00020;
+        font-weight: 600;
+        margin-top: var(--space-xs);
+      }
+      .result-grid {
+        display: grid;
+        gap: var(--space-sm);
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        margin-top: var(--space-sm);
+      }
+      .result-item {
+        padding: var(--space-sm);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-sm);
+        background: var(--color-surface-2);
+      }
+      .result-item h4 {
+        margin: 0 0 6px;
+        font-size: 0.95rem;
+        color: var(--color-muted);
+      }
+      .result-value {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--color-text);
+      }
+      .insights {
+        margin-top: var(--space-sm);
+        color: var(--color-muted);
+      }
+      .cta-card {
+        margin-top: var(--space-xl);
+      }
+      .faq-list {
+        margin-top: var(--space-md);
+        display: grid;
+        gap: var(--space-sm);
+      }
+      .faq-item {
+        padding: var(--space-md);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-sm);
+        background: var(--color-surface);
+      }
+      .faq-item strong {
+        display: block;
+        margin-bottom: var(--space-2xs);
+      }
+      .intro-list {
+        list-style: disc;
+        padding-left: 1.2rem;
+        color: var(--color-muted);
+      }
+      .disclaimer {
+        margin-top: var(--space-sm);
+        color: var(--color-muted);
+      }
+      #pricing-capture {
+        display: none;
+        margin-top: var(--space-xs);
+        padding-top: var(--space-md);
+        padding-bottom: var(--space-md);
+      }
+      .section-compact {
+        padding: var(--space-md) 0;
+      }
+      .section-divider {
+        border-top: 1px solid var(--color-border);
+        padding-top: var(--space-sm);
+        margin-top: var(--space-sm);
+      }
+      .results-highlight {
+        animation: pulseOutline 0.9s ease;
+      }
+      @keyframes pulseOutline {
+        0% {
+          box-shadow: 0 0 0 0 rgba(14, 79, 71, 0.25);
+        }
+        60% {
+          box-shadow: 0 0 0 8px rgba(14, 79, 71, 0.08);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(14, 79, 71, 0);
+        }
+      }
+      @media (min-width: 769px) {
+        .section-compact {
+          padding: var(--space-lg) 0;
+        }
+      }
+      .results-cue {
+        display: none;
+        font-size: 0.9rem;
+        color: var(--color-muted);
+        margin-top: var(--space-xs);
+      }
+      @media (max-width: 480px) {
+        .calc-card,
+        .results-card,
+        .cta-card,
+        .example-card {
+          padding: var(--space-md);
+        }
+        .section-compact {
+          padding: var(--space-md) 0;
+        }
+        .calc-grid {
+          gap: var(--space-xl);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top-nav">
+      <div class="container">
+        <a class="brand" href="/tools/">
+          <img src="../shared/logo.svg" alt="Point Numera logo" />
+        </a>
+        <nav class="nav-links">
+          <a class="nav-link" data-nav href="/tools/">Tools Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-wrap">
+      <section class="container hero">
+        <h1>Pricing Calculator for Founders</h1>
+        <p class="lead">
+          Know if your pricing is profitable in under 3 minutes. This quick
+          check shows margin, break-even, and whether your volume can cover
+          overhead.
+        </p>
+        <ul class="intro-list">
+          <li>Outputs: margin, break-even units, monthly profit</li>
+          <li>
+            Baseline only (excludes discounts, VAT, channel fees, waste, labor
+            allocation)
+          </li>
+        </ul>
+      </section>
+
+      <section class="container section section-compact">
+        <div class="calc-grid">
+          <div class="card calc-card">
+            <form id="pricing-form" class="form">
+              <div class="input-group">
+                <label for="price">Selling price (per unit)</label>
+                <input
+                  id="price"
+                  name="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="e.g., 49"
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="varCost">Variable cost (per unit)</label>
+                <input
+                  id="varCost"
+                  name="varCost"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="e.g., 18"
+                />
+                <div class="helper-text">
+                  Direct costs only. Many businesses forget fees, waste, and
+                  delivery.
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="fixedCosts">Monthly fixed costs</label>
+                <input
+                  id="fixedCosts"
+                  name="fixedCosts"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="e.g., 4000"
+                />
+                <div class="helper-text">
+                  Overheads like rent, tools, base payroll.
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="units">Expected monthly units sold</label>
+                <input
+                  id="units"
+                  name="units"
+                  type="number"
+                  min="0"
+                  step="1"
+                  required
+                  placeholder="e.g., 120"
+                />
+              </div>
+
+              <div
+                id="error"
+                class="error-text"
+                aria-live="polite"
+                style="display: none"
+              ></div>
+
+              <button type="submit" class="btn btn-primary">
+                Calculate pricing health
+              </button>
+              <div id="resultsCue" class="results-cue">Results below ↓</div>
+            </form>
+          </div>
+
+          <div id="results" class="card results-card" aria-live="polite">
+            <div id="results-anchor" aria-hidden="true"></div>
+            <div class="result-grid" aria-live="polite">
+              <div class="result-item">
+                <h4>Contribution per unit</h4>
+                <div id="contribution" class="result-value">-</div>
+              </div>
+              <div class="result-item">
+                <h4>Gross margin %</h4>
+                <div id="margin" class="result-value">—</div>
+              </div>
+              <div class="result-item">
+                <h4>Monthly gross profit</h4>
+                <div id="grossProfit" class="result-value">—</div>
+              </div>
+              <div class="result-item">
+                <h4>Monthly operating profit</h4>
+                <div id="operatingProfit" class="result-value">—</div>
+              </div>
+              <div class="result-item">
+                <h4>Break-even units</h4>
+                <div id="breakeven" class="result-value">-</div>
+              </div>
+            </div>
+
+            <div
+              class="flex space-between gap-md"
+              style="
+                flex-wrap: wrap;
+                margin-top: var(--space-sm);
+                border-top: 1px solid var(--color-border);
+                padding-top: var(--space-sm);
+              "
+            >
+              <span id="statusLabel" class="status-badge">Status: -</span>
+              <div class="text-subtle" id="resultsHelper">
+                Enter inputs to see results.
+              </div>
+            </div>
+
+            <div class="insights">
+              <div id="insightLine1">-</div>
+              <div id="insightLine2">-</div>
+            </div>
+            <p class="disclaimer">
+              This is a quick baseline. Real pricing depends on discounts,
+              payment fees, waste, labor allocation, and channel mix.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="pricing-capture"
+        class="container section section-compact cta-card"
+      >
+        <div class="card section-divider capture-card">
+          <div class="capture-content">
+            <h3>Get the expanded pricing model</h3>
+            <p>
+              I'll email you the extended version plus a few interpretation
+              notes.
+            </p>
+          </div>
+          <form
+            id="pricingCaptureForm"
+            class="capture-form"
+            data-capture
+            action="https://assets.mailerlite.com/jsonp/1801866/forms/173696433480795956/subscribe"
+            method="post"
+          >
+            <input type="hidden" name="ml-submit" value="1" />
+            <input type="hidden" name="anticsrf" value="true" />
+            <input
+              type="hidden"
+              name="fields[source_tool]"
+              value="pricing_calculator"
+            />
+            <div class="row-form">
+              <div class="capture-fields">
+                <div class="form-row capture-hide-on-success">
+                  <label for="pricingCaptureName">Name (optional)</label>
+                  <input
+                    id="pricingCaptureName"
+                    type="text"
+                    name="fields[name]"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div class="form-row capture-hide-on-success">
+                  <label for="pricingCaptureEmail">Email</label>
+                  <input
+                    id="pricingCaptureEmail"
+                    type="email"
+                    name="fields[email]"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+                <div class="form-row checkbox-row capture-hide-on-success">
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="fields[consent_checkbox]"
+                      value="yes"
+                      required
+                    />
+                    <span>
+                      I agree to receive the expanded model and occasional
+                      updates.
+                    </span>
+                  </label>
+                </div>
+                <div class="form-actions">
+                  <button
+                    type="submit"
+                    class="btn btn-primary capture-hide-on-success"
+                  >
+                    Send it to me
+                  </button>
+                  <a
+                    class="btn btn-secondary"
+                    href="https://cal.com/pointnumera/pricing-sanity-check"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Book a 15-min pricing sanity check</a
+                  >
+                </div>
+              </div>
+              <div class="form-msg" aria-live="polite"></div>
+            </div>
+            <div class="row-success" style="display: none">
+              <div
+                class="form-msg"
+                id="pricingCaptureMsg"
+                aria-live="polite"
+              ></div>
+              <div class="form-actions">
+                <a
+                  class="btn btn-secondary"
+                  href="https://cal.com/pointnumera/pricing-sanity-check"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Book a 15-min pricing sanity check</a
+                >
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section
+        id="cta-secondary"
+        class="container section section-compact cta-card"
+      >
+        <div class="card">
+          <h3>Want the expanded pricing model?</h3>
+          <p class="lead">
+            Get scenarios, hidden costs, and a CFO-style pricing view.
+          </p>
+          <div class="flex gap-sm" style="flex-wrap: wrap">
+            <a
+              id="expandedModelLink"
+              class="btn btn-primary"
+              href="#"
+              target="_blank"
+              rel="noopener"
+              >Get the expanded model</a
+            >
+            <a
+              id="bookingLink"
+              class="btn btn-secondary"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Book a 15-min pricing sanity check</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="container section section-compact">
+        <h2>FAQ</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <strong>What does this pricing calculator do?</strong>
+            <p>
+              It estimates margin, break-even units, and monthly profit using
+              your price, variable costs, fixed costs, and sales volume.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>What costs count as variable costs?</strong>
+            <p>
+              Costs that increase per unit sold, like materials, packaging, and
+              per-order delivery.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>What are fixed costs?</strong>
+            <p>
+              Monthly overheads that don’t change much with sales volume, like
+              rent, software, and base payroll.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>What is break-even in units?</strong>
+            <p>
+              The number of units you need to sell so contribution covers fixed
+              costs.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong
+              >What’s the difference between gross margin and profit?</strong
+            >
+            <p>
+              Gross margin is per-sale contribution before overhead; profit is
+              what’s left after fixed costs.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>Is this calculator enough to set my final price?</strong>
+            <p>
+              It’s a baseline. Final pricing often needs discounts, channel
+              fees, VAT, waste, and capacity constraints.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>Do you store my data?</strong>
+            <p>No. Everything runs in your browser and inputs aren’t saved.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="scrollCue" class="pn-scroll-cue">
+      <span id="scrollCueText" class="pn-scroll-cue-text"
+        >↓ Results & expanded model below</span
+      >
+      <span class="pn-scroll-cue-action">Jump</span>
+    </div>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What does this pricing calculator do?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "It estimates margin, break-even units, and monthly profit using your price, variable costs, fixed costs, and sales volume."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What costs count as variable costs?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Costs that increase per unit sold, like materials, packaging, and per-order delivery."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What are fixed costs?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Monthly overheads that don’t change much with sales volume, like rent, software, and base payroll."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is break-even in units?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The number of units you need to sell so contribution covers fixed costs."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What’s the difference between gross margin and profit?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Gross margin is per-sale contribution before overhead; profit is what’s left after fixed costs."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is this calculator enough to set my final price?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "It’s a baseline. Final pricing often needs discounts, channel fees, VAT, waste, and capacity constraints."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do you store my data?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Everything runs in your browser and inputs aren’t saved."
+            }
+          }
+        ]
+      }
+    </script>
+
+    <script>
+      const EXPANDED_MODEL_URL =
+        "https://preview.mailerlite.io/forms/1801866/173696433480795956/share";
+      const BOOKING_URL = "https://cal.com/pointnumera/pricing-sanity-check";
+
+      const form = document.getElementById("pricing-form");
+      const errorEl = document.getElementById("error");
+      const resultsEl = document.getElementById("results");
+      const resultsAnchor = document.getElementById("results-anchor");
+      const statusLabel = document.getElementById("statusLabel");
+      const contributionEl = document.getElementById("contribution");
+      const marginEl = document.getElementById("margin");
+      const grossProfitEl = document.getElementById("grossProfit");
+      const operatingProfitEl = document.getElementById("operatingProfit");
+      const breakevenEl = document.getElementById("breakeven");
+      const insightLine1 = document.getElementById("insightLine1");
+      const insightLine2 = document.getElementById("insightLine2");
+      const expandedLink = document.getElementById("expandedModelLink");
+      const bookingLink = document.getElementById("bookingLink");
+      const helperText = document.getElementById("resultsHelper");
+      const captureSection = document.getElementById("pricing-capture");
+      const resultsCue = document.getElementById("resultsCue");
+      const scrollCue = document.getElementById("scrollCue");
+      const scrollCueText = document.getElementById("scrollCueText");
+      const ctaSecondary = document.getElementById("cta-secondary");
+      let scrollCueStep = 0;
+      let cueTimeout = null;
+      let scrollHandlerAttached = false;
+      const rootStyle = document.documentElement.style;
+
+      expandedLink.href = EXPANDED_MODEL_URL;
+      bookingLink.href = BOOKING_URL;
+
+      const fmtCurrency = (value) =>
+        new Intl.NumberFormat("en-IE", {
+          style: "currency",
+          currency: "EUR",
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        }).format(value);
+
+      const fmtPercent = (value) => `${(value * 100).toFixed(1)}%`;
+
+      const setError = (msg) => {
+        errorEl.textContent = msg;
+        errorEl.style.display = msg ? "block" : "none";
+      };
+
+      const setStatus = (profit, margin) => {
+        statusLabel.classList.remove(
+          "status-risk",
+          "status-tight",
+          "status-healthy"
+        );
+        if (profit < 0) {
+          statusLabel.textContent = "Status: At risk";
+          statusLabel.classList.add("status-risk");
+        } else if (margin < 0.4) {
+          statusLabel.textContent = "Status: Tight";
+          statusLabel.classList.add("status-tight");
+        } else {
+          statusLabel.textContent = "Status: Healthy";
+          statusLabel.classList.add("status-healthy");
+        }
+      };
+
+      const resetPlaceholders = () => {
+        contributionEl.textContent = "—";
+        marginEl.textContent = "—";
+        grossProfitEl.textContent = "—";
+        operatingProfitEl.textContent = "—";
+        breakevenEl.textContent = "-";
+        statusLabel.textContent = "Status: -";
+        helperText.textContent = "Enter inputs to see results.";
+        statusLabel.classList.remove(
+          "status-risk",
+          "status-tight",
+          "status-healthy"
+        );
+        if (captureSection) captureSection.style.display = "none";
+        if (resultsCue) resultsCue.style.display = "none";
+        if (cueTimeout) clearTimeout(cueTimeout);
+        if (scrollHandlerAttached) {
+          window.removeEventListener("scroll", handleCueScroll);
+          scrollHandlerAttached = false;
+        }
+        hideScrollCue();
+      };
+
+      resetPlaceholders();
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const price = parseFloat(form.price.value);
+        const varCost = parseFloat(form.varCost.value);
+        const fixedCosts = parseFloat(form.fixedCosts.value);
+        const units = parseFloat(form.units.value);
+
+        if (
+          !price ||
+          !varCost ||
+          !fixedCosts ||
+          !units ||
+          price <= 0 ||
+          varCost <= 0 ||
+          fixedCosts <= 0 ||
+          units <= 0
+        ) {
+          setError("Please enter values greater than 0 in all fields.");
+          resetPlaceholders();
+          return;
+        }
+
+        if (varCost >= price) {
+          setError(
+            "You lose money on every sale at this price. Lower costs or raise the price."
+          );
+          resetPlaceholders();
+          return;
+        }
+
+        setError("");
+
+        const contribution = price - varCost;
+        const margin = contribution / price;
+        const grossProfit = contribution * units;
+        const operatingProfit = grossProfit - fixedCosts;
+        const breakevenUnits = Math.ceil(fixedCosts / contribution);
+
+        contributionEl.textContent = fmtCurrency(contribution);
+        marginEl.textContent = fmtPercent(margin);
+        grossProfitEl.textContent = fmtCurrency(grossProfit);
+        operatingProfitEl.textContent = fmtCurrency(operatingProfit);
+        breakevenEl.textContent = `${breakevenUnits.toLocaleString(
+          "en-IE"
+        )} units`;
+
+        setStatus(operatingProfit, margin);
+
+        const coversFixed = operatingProfit >= 0;
+        insightLine1.textContent = `At ${units.toLocaleString(
+          "en-IE"
+        )} units/month, you ${
+          coversFixed ? "cover" : "do not cover"
+        } your fixed costs.`;
+        insightLine2.textContent = `Break-even is ~${breakevenUnits.toLocaleString(
+          "en-IE"
+        )} units/month at this pricing.`;
+
+        helperText.textContent = "Updated results based on your inputs.";
+        if (captureSection) captureSection.style.display = "block";
+        if (ctaSecondary) ctaSecondary.style.display = "none";
+
+        const showCue = () => {
+          if (!resultsCue) return;
+          resultsCue.style.display = "block";
+          if (cueTimeout) clearTimeout(cueTimeout);
+          cueTimeout = setTimeout(hideCue, 3000);
+          if (!scrollHandlerAttached) {
+            window.addEventListener("scroll", handleCueScroll);
+            scrollHandlerAttached = true;
+          }
+        };
+
+        const hideCue = () => {
+          if (!resultsCue) return;
+          resultsCue.style.display = "none";
+          if (cueTimeout) clearTimeout(cueTimeout);
+          if (scrollHandlerAttached) {
+            window.removeEventListener("scroll", handleCueScroll);
+            scrollHandlerAttached = false;
+          }
+        };
+
+        function handleCueScroll() {
+          const y = window.scrollY + window.innerHeight * 0.25;
+          if (y >= resultsEl.offsetTop) {
+            hideCue();
+          }
+        }
+
+        showCue();
+        showScrollCue();
+      });
+
+      function showScrollCue() {
+        if (!scrollCue || !scrollCueText) return;
+        scrollCueStep = 0;
+        scrollCueText.textContent = "↓ Results & expanded model below";
+        scrollCue.style.display = "flex";
+        document.body.classList.add("pn-scroll-padding");
+        const cueHeight = scrollCue.getBoundingClientRect().height || 0;
+        rootStyle.setProperty("--pn-sticky-offset", `${cueHeight + 16}px`);
+      }
+
+      function hideScrollCue() {
+        if (!scrollCue) return;
+        scrollCue.style.display = "none";
+        document.body.classList.remove("pn-scroll-padding");
+        rootStyle.setProperty("--pn-sticky-offset", "0px");
+      }
+
+      if (scrollCue) {
+        scrollCue.addEventListener("click", () => {
+          if (scrollCueStep === 0) {
+            if (resultsAnchor) {
+              resultsAnchor.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            } else {
+              window.scrollTo({
+                top:
+                  resultsEl.getBoundingClientRect().top + window.scrollY - 70,
+                behavior: "smooth",
+              });
+            }
+            scrollCueStep = 1;
+            if (scrollCueText)
+              scrollCueText.textContent = "↓ Get the expanded model";
+          } else {
+            if (captureSection) {
+              captureSection.style.display = "block";
+              const targetTop =
+                captureSection.getBoundingClientRect().top +
+                window.scrollY -
+                70;
+              window.scrollTo({ top: targetTop, behavior: "smooth" });
+            }
+            hideScrollCue();
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

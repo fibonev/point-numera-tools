@@ -1,0 +1,133 @@
+﻿:root {
+  /* Brand palette */
+  --color-primary: #0E4F47;
+  --color-contrast: #F4ECBD;
+  --color-secondary: #A4D6A4;
+  --color-bg: #f5f7f5;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0f4f1;
+  --color-border: #d5e2dc;
+  --color-text: #0f1a16;
+  --color-muted: #5b6b64;
+
+  /* Radius scale (match Framer site feel) */
+  --r: 3px;
+  --r-sm: calc(var(--r) * 0.75);
+  --r-md: calc(var(--r) * 1.5);
+  --r-lg: calc(var(--r) * 2.25);
+
+  /* Spacing scale (more air like marketing site) */
+  --space-2xs: 6px;
+  --space-xs: 10px;
+  --space-sm: 14px;
+  --space-md: 20px;
+  --space-lg: 28px;
+  --space-xl: 40px;
+  --space-xxl: 56px;
+
+  /* Buttons */
+  --btn-h: 46px;
+  --btn-px: 16px;
+  --btn-gap: 8px;
+
+  /* Elevation (lighter emphasis, prefer borders) */
+  --shadow-soft: 0 6px 14px rgba(14, 79, 71, 0.08);
+  --shadow-card: 0 10px 22px rgba(14, 79, 71, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'PT Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; /* TODO: self-host PT Sans for parity with site */
+  background: linear-gradient(180deg, #f7f9f8 0%, #f1f5f2 100%);
+  color: var(--color-text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #0c3f38;
+}
+
+a:active {
+  color: #092f2a;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+p {
+  margin: 0 0 var(--space-md);
+  color: var(--color-muted);
+}
+
+h1, h2, h3, h4 {
+  margin: 0 0 var(--space-sm);
+  font-family: 'Ancizar Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; /* TODO: self-host Ancizar Sans to match main site */
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.container {
+  width: min(1040px, 92%);
+  margin: 0 auto;
+}
+
+.section {
+  padding: var(--space-xxl) 0;
+}
+
+.lead {
+  font-size: 1.05rem;
+  color: var(--color-muted);
+}
+
+.text-subtle {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+
+button { font-family: inherit; }
+table { border-collapse: collapse; }

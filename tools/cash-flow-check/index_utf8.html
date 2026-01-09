@@ -1,0 +1,732 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cash-Flow Check | Point Numera</title>
+    <meta
+      name="description"
+      content="Quickly estimate runway and cash-crunch risk without a spreadsheet. Free cash-flow check for founders."
+    />
+    <link
+      rel="canonical"
+      href="https://pointnumera.com/tools/cash-flow-check/"
+    />
+    <meta property="og:title" content="Cash-Flow Check | Point Numera" />
+    <meta
+      property="og:description"
+      content="Quickly estimate runway and cash-crunch risk without a spreadsheet. Free cash-flow check for founders."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://pointnumera.com/tools/cash-flow-check/"
+    />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="../shared/ui.css" />
+    <script>
+      // TODO: Insert Cash-Flow MailerLite Universal ID if provided
+      (function (w, d, e, u, f, l, n) {
+        w[f] =
+          w[f] ||
+          function () {
+            (w[f].q = w[f].q || []).push(arguments);
+          };
+        l = d.createElement(e);
+        l.async = 1;
+        l.src = u;
+        n = d.getElementsByTagName(e)[0];
+        n.parentNode.insertBefore(l, n);
+      })(window, document, "script", "https://assets.mailerlite.com/js/universal.js", "ml");
+    </script>
+    <style>
+      .page-wrap {
+        padding-bottom: var(--space-xxl);
+      }
+      .hero {
+        padding-bottom: var(--space-lg);
+      }
+      .grid {
+        display: grid;
+        gap: var(--space-lg);
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        align-items: start;
+      }
+      .card-form {
+        gap: var(--space-sm);
+        display: flex;
+        flex-direction: column;
+      }
+      .results-card {
+        margin: 0;
+      }
+      #results-card {
+        scroll-margin-top: calc(var(--pn-sticky-offset, 0px));
+      }
+      #results-anchor {
+        scroll-margin-top: calc(var(--pn-sticky-offset, 0px));
+      }
+      .status-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+        justify-content: space-between;
+        margin-top: var(--space-sm);
+        padding-top: var(--space-sm);
+        border-top: 1px solid var(--color-border);
+      }
+      .result-grid {
+        display: grid;
+        gap: var(--space-sm);
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        margin-top: var(--space-sm);
+      }
+      .result-item {
+        padding: var(--space-sm);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-sm);
+        background: var(--color-surface-2);
+      }
+      .result-item h4 {
+        margin: 0 0 6px;
+        font-size: 0.95rem;
+        color: var(--color-muted);
+      }
+      .result-value {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--color-text);
+      }
+      .insights {
+        margin-top: var(--space-sm);
+        color: var(--color-muted);
+      }
+      .insights ul {
+        list-style: disc;
+        padding-left: 1.2rem;
+        margin: 0;
+      }
+      .capture-card {
+        margin-top: var(--space-md);
+      }
+      .capture-card form {
+        display: grid;
+        gap: var(--space-sm);
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        align-items: flex-start;
+      }
+      .capture-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+      }
+      .faq-list {
+        margin-top: var(--space-md);
+        display: grid;
+        gap: var(--space-sm);
+      }
+      .faq-item {
+        padding: var(--space-md);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-sm);
+        background: var(--color-surface);
+      }
+      .faq-item strong {
+        display: block;
+        margin-bottom: var(--space-2xs);
+      }
+      .note-link {
+        color: var(--color-primary);
+      }
+      #capture-section {
+        display: none;
+      }
+      @media (max-width: 768px) {
+        .section {
+          padding: var(--space-xl) 0;
+        }
+        .grid {
+          gap: var(--space-xl);
+        }
+      }
+      @media (max-width: 480px) {
+        .grid {
+          gap: var(--space-xl);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top-nav">
+      <div class="container">
+        <a class="brand" href="/tools/">
+          <img src="../shared/logo.svg" alt="Point Numera logo" />
+        </a>
+        <nav class="nav-links">
+          <a class="nav-link" data-nav href="/tools/">Tools Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-wrap">
+      <section class="container hero">
+        <h1>Cash-Flow Check</h1>
+        <p class="lead">
+          Quickly estimate runway and cash-crunch risk — without building a
+          spreadsheet.
+        </p>
+      </section>
+
+      <section class="container section section-compact">
+        <div class="grid">
+          <div class="card" id="inputs-card">
+            <form id="cashflow-form" class="card-form" novalidate>
+              <div class="input-group">
+                <label for="cash">Cash on hand (€)</label>
+                <input
+                  id="cash"
+                  name="cash"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="e.g., 12000"
+                />
+              </div>
+              <div class="input-group">
+                <label for="revenue">Monthly revenue collected (€)</label>
+                <input
+                  id="revenue"
+                  name="revenue"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="e.g., 18000"
+                />
+              </div>
+              <div class="input-group">
+                <label for="costs">Monthly operating costs (€)</label>
+                <input
+                  id="costs"
+                  name="costs"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="e.g., 22000"
+                />
+              </div>
+              <div class="input-group">
+                <label for="dso">Average days to get paid (DSO)</label>
+                <input
+                  id="dso"
+                  name="dso"
+                  type="number"
+                  min="0"
+                  max="180"
+                  step="1"
+                  value="30"
+                />
+              </div>
+              <div class="input-group">
+                <label for="dpo">Average days to pay bills (DPO)</label>
+                <input
+                  id="dpo"
+                  name="dpo"
+                  type="number"
+                  min="0"
+                  max="180"
+                  step="1"
+                  value="14"
+                />
+              </div>
+              <div class="input-group">
+                <label for="volatility">Revenue volatility</label>
+                <select id="volatility" name="volatility">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+              <div
+                id="form-error"
+                class="error-text"
+                aria-live="polite"
+                style="display: none"
+              ></div>
+              <button type="submit" class="btn btn-primary">
+                Calculate cash-flow health
+              </button>
+            </form>
+          </div>
+
+          <div id="results-card" class="card results-card" aria-live="polite">
+            <div id="results-anchor" aria-hidden="true"></div>
+            <div class="result-grid">
+              <div class="result-item">
+                <h4>Net monthly cash flow</h4>
+                <div id="netCash" class="result-value">—</div>
+              </div>
+              <div class="result-item">
+                <h4>Runway</h4>
+                <div id="runway" class="result-value">—</div>
+              </div>
+              <div class="result-item">
+                <h4>Timing gap</h4>
+                <div id="timingGap" class="result-value">—</div>
+              </div>
+              <div class="result-item">
+                <h4>Timing buffer needed</h4>
+                <div id="timingBuffer" class="result-value">—</div>
+              </div>
+              <div class="result-item">
+                <h4>Status</h4>
+                <div id="statusChip" class="status-badge">Status: —</div>
+              </div>
+            </div>
+
+            <div class="insights">
+              <div class="text-subtle">Insights</div>
+              <ul id="insightsList">
+                <li>Run the calculation to see tailored guidance.</li>
+              </ul>
+            </div>
+            <p class="disclaimer">
+              Baseline only. This quick check doesn’t account for taxes,
+              financing, or large one-off swings.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="capture-section"
+        class="container section section-compact cta-card"
+      >
+        <div class="card section-divider">
+          <h3>Email me the expanded cash-flow checklist</h3>
+          <p class="lead">
+            Get a short checklist covering collections, payables, and buffer
+            planning.
+          </p>
+          <form id="capture-form" action="#" method="post">
+            <div class="input-group">
+              <label for="firstName">First name (optional)</label>
+              <input
+                id="firstName"
+                name="firstName"
+                type="text"
+                autocomplete="given-name"
+                placeholder="Your name"
+              />
+            </div>
+            <div class="input-group">
+              <label for="email">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                placeholder="you@example.com"
+              />
+            </div>
+            <div class="capture-actions">
+              <button type="submit" class="btn btn-primary">
+                Send me the checklist
+              </button>
+              <a
+                class="btn btn-secondary"
+                id="captureBooking"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Book a 15-min cash-flow sanity check</a
+              >
+            </div>
+            <div
+              id="capture-message"
+              class="helper-text"
+              aria-live="polite"
+            ></div>
+          </form>
+        </div>
+      </section>
+
+      <section
+        class="container section section-compact cta-card"
+        id="cta-secondary"
+        style="display: none"
+      >
+        <div class="card">
+          <h3>Want the expanded cash-flow checklist?</h3>
+          <p class="lead">
+            Get a quick checklist and a 15-min cash-flow sanity check.
+          </p>
+          <div class="flex gap-sm" style="flex-wrap: wrap">
+            <a
+              id="ctaExpanded"
+              class="btn btn-primary"
+              href="#"
+              target="_blank"
+              rel="noopener"
+              >Get the checklist</a
+            >
+            <a
+              id="ctaBooking"
+              class="btn btn-secondary"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Book a 15-min cash-flow sanity check</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="container section section-compact">
+        <h2>FAQ</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <strong>What does this cash-flow check do?</strong>
+            <p>
+              It estimates net cash flow, runway, and timing risk from your
+              cash, collections, and cost inputs.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>How do timing gaps affect cash?</strong>
+            <p>
+              Longer DSO vs. DPO means you pay bills before collecting cash,
+              increasing buffer needs.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>What if my net cash flow is positive?</strong>
+            <p>
+              You’re not burning, but timing gaps can still create short-term
+              crunches.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>Do you store my data?</strong>
+            <p>No. Everything runs in your browser and isn’t saved.</p>
+          </div>
+          <div class="faq-item">
+            <strong>Is this financial advice?</strong>
+            <p>
+              No. It’s a quick directional check—talk to your finance advisor
+              for detailed planning.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="scrollCue" class="pn-scroll-cue">
+      <span id="scrollCueText" class="pn-scroll-cue-text"
+        >? Results & expanded model below</span
+      >
+      <span class="pn-scroll-cue-action">Jump</span>
+    </div>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What does this cash-flow check do?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "It estimates net cash flow, runway, and timing risk from your cash, collections, and cost inputs."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do timing gaps affect cash?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Longer DSO vs. DPO means you pay bills before collecting cash, increasing buffer needs."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What if my net cash flow is positive?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "You’re not burning, but timing gaps can still create short-term crunches."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do you store my data?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Everything runs in your browser and isn’t saved."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is this financial advice?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. It’s a quick directional check—talk to your finance advisor for detailed planning."
+            }
+          }
+        ]
+      }
+    </script>
+
+    <script>
+      const BOOKING_URL = "https://cal.com/your-link";
+      const MAILERLITE_FORM_ACTION =
+        "https://preview.mailerlite.io/forms/1801866/173725109963458036/share";
+      const MAILERLITE_GROUP_NAME = "Tools – Cash-Flow Check";
+
+      const form = document.getElementById("cashflow-form");
+      const errorEl = document.getElementById("form-error");
+      const netCashEl = document.getElementById("netCash");
+      const runwayEl = document.getElementById("runway");
+      const timingGapEl = document.getElementById("timingGap");
+      const timingBufferEl = document.getElementById("timingBuffer");
+      const statusChip = document.getElementById("statusChip");
+      const insightsList = document.getElementById("insightsList");
+      const resultsAnchor = document.getElementById("results-anchor");
+      const scrollCue = document.getElementById("scrollCue");
+      const scrollCueText = document.getElementById("scrollCueText");
+      const captureSection = document.getElementById("capture-section");
+      const captureForm = document.getElementById("capture-form");
+      const captureMessage = document.getElementById("capture-message");
+      const captureBooking = document.getElementById("captureBooking");
+      const ctaSecondary = document.getElementById("cta-secondary");
+      const ctaExpanded = document.getElementById("ctaExpanded");
+      const ctaBooking = document.getElementById("ctaBooking");
+      const rootStyle = document.documentElement.style;
+      const bodyEl = document.body;
+
+      let scrollCueStep = 0;
+      let scrollCueVisible = false;
+
+      ctaExpanded.href = MAILERLITE_FORM_ACTION;
+      ctaBooking.href = BOOKING_URL;
+      captureBooking.href = BOOKING_URL;
+
+      const fmtCurrency = (value) =>
+        new Intl.NumberFormat("en-IE", {
+          style: "currency",
+          currency: "EUR",
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        }).format(value);
+
+      const fmtMonths = (value) => `${value.toFixed(1)} mo`;
+
+      const setStatus = (status) => {
+        statusChip.classList.remove(
+          "status-risk",
+          "status-tight",
+          "status-healthy"
+        );
+        if (status === "risk") {
+          statusChip.textContent = "Status: At risk";
+          statusChip.classList.add("status-risk");
+        } else if (status === "tight") {
+          statusChip.textContent = "Status: Tight";
+          statusChip.classList.add("status-tight");
+        } else {
+          statusChip.textContent = "Status: Healthy";
+          statusChip.classList.add("status-healthy");
+        }
+      };
+
+      const setInsights = (status, volatility, hasData) => {
+        insightsList.innerHTML = "";
+        if (!hasData) {
+          const li = document.createElement("li");
+          li.textContent = "Add revenue and cost data to see guidance.";
+          insightsList.appendChild(li);
+          return;
+        }
+        const items = [];
+        if (status === "risk") {
+          items.push(
+            "What this means: You are burning cash and have limited runway."
+          );
+          items.push(
+            "First lever: Shorten DSO or defer payables to slow the cash bleed."
+          );
+          items.push(
+            "If you do one thing this week: Secure a buffer (credit line or cash injection)."
+          );
+        } else if (status === "tight") {
+          items.push(
+            "What this means: Cash is workable but timing gaps could crunch you."
+          );
+          items.push(
+            "First lever: Pull collections forward (faster invoicing, upfronts)."
+          );
+          items.push(
+            "If you do one thing this week: Add a small buffer to cover timing swings."
+          );
+        } else {
+          items.push(
+            "What this means: Cash position looks healthy at this burn."
+          );
+          items.push(
+            "First lever: Keep DSO in check so timing risk stays low."
+          );
+          items.push(
+            "If you do one thing this week: Build a light reserve for volatility."
+          );
+        }
+        if (volatility === "high") {
+          items[0] += " High volatility increases risk of shortfalls.";
+        } else if (volatility === "medium") {
+          items[0] += " Moderate volatility—keep collections disciplined.";
+        }
+        items.forEach((text) => {
+          const li = document.createElement("li");
+          li.textContent = text;
+          insightsList.appendChild(li);
+        });
+      };
+
+      const showError = (msg) => {
+        errorEl.textContent = msg;
+        errorEl.style.display = msg ? "block" : "none";
+      };
+
+      const resetResults = () => {
+        netCashEl.textContent = "—";
+        runwayEl.textContent = "—";
+        timingGapEl.textContent = "—";
+        timingBufferEl.textContent = "—";
+        setStatus("tight");
+        statusChip.textContent = "Status: —";
+        setInsights("tight", "medium", false);
+        hideScrollCue();
+        captureSection.style.display = "none";
+        if (ctaSecondary) ctaSecondary.style.display = "block";
+      };
+
+      resetResults();
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const cash = parseFloat(form.cash.value);
+        const revenue = parseFloat(form.revenue.value);
+        const costs = parseFloat(form.costs.value);
+        const dso = parseFloat(form.dso.value);
+        const dpo = parseFloat(form.dpo.value);
+        const volatility = form.volatility.value;
+
+        if ([cash, revenue, costs, dso, dpo].some((v) => isNaN(v) || v < 0)) {
+          showError("Please enter values greater than or equal to 0.");
+          resetResults();
+          return;
+        }
+
+        if (dso > 180 || dpo > 180) {
+          showError("DSO and DPO must be 0–180 days.");
+          resetResults();
+          return;
+        }
+
+        showError("");
+
+        const netCash = revenue - costs;
+        const burn = netCash < 0 ? Math.abs(netCash) : 0;
+        const runway = burn > 0 ? cash / burn : null;
+        const timingGap = Math.max(0, dso - dpo);
+        const timingBuffer = (costs / 30) * timingGap;
+        const bufferRatio = cash > 0 ? timingBuffer / cash : 1;
+
+        const insufficient = revenue === 0 && costs === 0;
+
+        netCashEl.textContent = fmtCurrency(netCash);
+        if (runway === null) {
+          runwayEl.textContent = "Positive net cash flow";
+        } else if (!isFinite(runway)) {
+          runwayEl.textContent = "—";
+        } else {
+          runwayEl.textContent = fmtMonths(runway);
+        }
+        timingGapEl.textContent = `${timingGap} days`;
+        timingBufferEl.textContent = fmtCurrency(timingBuffer);
+
+        let status = "healthy";
+        if (netCash < 0 && runway !== null && runway < 3) {
+          status = "risk";
+        } else if (timingGap >= 30 || bufferRatio > 0.25) {
+          status = "tight";
+        }
+
+        setStatus(status);
+        setInsights(status, volatility, !insufficient);
+
+        captureSection.style.display = "block";
+        if (ctaSecondary) ctaSecondary.style.display = "none";
+
+        showScrollCue();
+      });
+
+      captureForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = captureForm.email.value.trim();
+        if (!email) {
+          captureMessage.textContent = "Please enter your email.";
+          return;
+        }
+        captureMessage.textContent =
+          "Check your inbox — I’ll send the expanded checklist.";
+      });
+
+      function showScrollCue() {
+        if (!scrollCue || !scrollCueText) return;
+        scrollCueStep = 0;
+        scrollCueText.textContent = "? Results & expanded model below";
+        scrollCue.style.display = "flex";
+        bodyEl.classList.add("pn-scroll-padding");
+        const cueHeight = scrollCue.getBoundingClientRect().height || 0;
+        rootStyle.setProperty("--pn-sticky-offset", `${cueHeight + 16}px`);
+        scrollCueVisible = true;
+      }
+
+      function hideScrollCue() {
+        if (!scrollCue) return;
+        scrollCue.style.display = "none";
+        bodyEl.classList.remove("pn-scroll-padding");
+        rootStyle.setProperty("--pn-sticky-offset", "0px");
+        scrollCueVisible = false;
+      }
+
+      if (scrollCue) {
+        scrollCue.addEventListener("click", () => {
+          if (scrollCueStep === 0) {
+            if (resultsAnchor) {
+              resultsAnchor.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }
+            scrollCueStep = 1;
+            scrollCueText.textContent = "? Get the checklist";
+          } else {
+            captureSection.style.display = "block";
+            captureSection.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+            hideScrollCue();
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
+
+
+
