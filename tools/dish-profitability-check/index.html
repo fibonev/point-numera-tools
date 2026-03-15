@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dish Profitability Checker | Point Numera</title>
+    <meta
+      name="description"
+      content="Enter one dish, see exactly what it costs you — and what it's actually worth. Calculate food cost %, gross margin, and identify your biggest cost driver."
+    />
+    <link
+      rel="canonical"
+      href="https://pointnumera.com/tools/dish-profitability-check/"
+    />
+    <meta
+      property="og:title"
+      content="Dish Profitability Checker | Point Numera"
+    />
+    <meta
+      property="og:description"
+      content="Enter one dish, see exactly what it costs you — and what it's actually worth. Calculate food cost %, gross margin, and identify your biggest cost driver."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://pointnumera.com/tools/dish-profitability-check/"
+    />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="../shared/ui.css" />
+    <script src="../shared/capture.js" defer></script>
+    <script src="../shared/app.js" defer></script>
+    <style>
+      .page-wrap {
+        padding-bottom: var(--space-xxl);
+      }
+
+      /* ── Stacked layout: form then results ───────────────────────────── */
+      .results-card {
+        margin-top: var(--space-md);
+        scroll-margin-top: 140px;
+        display: none;
+      }
+
+      /* ── Dish detail row (price + VAT) ────────────────────────────────── */
+      .dish-detail-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-md);
+      }
+
+      /* ── Input prefix / suffix wrappers ───────────────────────────────── */
+      .input-prefix-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .input-prefix-wrap input {
+        width: 100%;
+        padding-left: 24px;
+      }
+      .input-prefix {
+        position: absolute;
+        left: 9px;
+        font-weight: 600;
+        color: var(--color-muted);
+        pointer-events: none;
+        font-size: 0.9rem;
+        z-index: 1;
+      }
+      .input-suffix-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .input-suffix-wrap input {
+        width: 100%;
+        padding-right: 28px;
+      }
+      .input-suffix {
+        position: absolute;
+        right: 10px;
+        font-weight: 600;
+        color: var(--color-muted);
+        pointer-events: none;
+        font-size: 0.9rem;
+      }
+
+      /* ── Select ───────────────────────────────────────────────────────── */
+      select {
+        background: var(--color-surface)
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235b6b64' d='M6 8L0 0h12z'/%3E%3C/svg%3E")
+          no-repeat right 12px center;
+        border: 1px solid var(--color-border);
+        color: var(--color-text);
+        padding: 11px 36px 11px 12px;
+        border-radius: var(--r-md);
+        font-family: inherit;
+        font-size: 0.95rem;
+        width: 100%;
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+      }
+      select:focus {
+        border-color: rgba(14, 79, 71, 0.5);
+        box-shadow: 0 0 0 3px rgba(14, 79, 71, 0.1);
+        outline: none;
+      }
+
+      /* ── Ingredient section ───────────────────────────────────────────── */
+      .ingredient-section {
+        margin-top: var(--space-md);
+        padding-top: var(--space-md);
+        border-top: 1px solid var(--color-border);
+      }
+      .ingredient-section-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--space-xs);
+        margin-bottom: var(--space-sm);
+      }
+      .ingredient-section-header h4 {
+        margin: 0;
+        font-size: 0.95rem;
+      }
+      .add-ing-btn {
+        min-height: 34px;
+        font-size: 0.85rem;
+        padding: 0 12px;
+        border-radius: var(--r-sm);
+      }
+
+      /* ── Ingredient column headers ────────────────────────────────────── */
+      .ing-col-headers {
+        display: grid;
+        grid-template-columns: 3fr 90px 110px 2fr 38px;
+        gap: 10px;
+        padding-bottom: var(--space-2xs);
+        border-bottom: 1px solid var(--color-border);
+        margin-bottom: 6px;
+      }
+      .ing-col-headers span {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--color-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+
+      /* ── Ingredient rows ──────────────────────────────────────────────── */
+      .ingredient-rows {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .ingredient-row {
+        display: grid;
+        grid-template-columns: 3fr 90px 110px 2fr 38px;
+        gap: 10px;
+        align-items: center;
+      }
+
+      /* Remove button */
+      .ing-remove {
+        background: none;
+        border: 1px solid var(--color-border);
+        color: var(--color-muted);
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        height: 38px;
+        width: 38px;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: border-color 0.15s ease, color 0.15s ease;
+        font-family: inherit;
+        padding: 0;
+      }
+      .ing-remove:hover {
+        border-color: #b00020;
+        color: #b00020;
+      }
+      .ing-remove:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      .ing-remove:disabled:hover {
+        border-color: var(--color-border);
+        color: var(--color-muted);
+      }
+
+      /* ── Target food cost row ─────────────────────────────────────────── */
+      .target-row {
+        margin-top: var(--space-md);
+        padding-top: var(--space-md);
+        border-top: 1px solid var(--color-border);
+      }
+
+      /* ── Error states ─────────────────────────────────────────────────── */
+      .error-text {
+        color: #b00020;
+        font-weight: 600;
+        margin-top: var(--space-xs);
+        font-size: 0.9rem;
+      }
+      .input-error {
+        border-color: #b00020 !important;
+        box-shadow: 0 0 0 3px rgba(176, 0, 32, 0.08) !important;
+      }
+
+      /* ── Results card ─────────────────────────────────────────────────── */
+      .results-placeholder {
+        color: var(--color-muted);
+        font-size: 0.95rem;
+        padding: var(--space-md) 0;
+      }
+      .results-content {
+        display: none;
+      }
+      .results-content.visible {
+        display: block;
+        animation: fadeSlideIn 0.3s ease;
+      }
+      @keyframes fadeSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Header: dish name + badge */
+      .result-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--space-xs);
+        margin-bottom: var(--space-md);
+      }
+      .result-dish-name {
+        font-family: 'Ancizar Sans', system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--color-text);
+      }
+
+      /* Cost highlight (yellow) */
+      .result-cost-highlight {
+        background: #f4ecbd;
+        border-radius: var(--r-md);
+        padding: var(--space-md);
+        margin-bottom: var(--space-md);
+      }
+      .result-cost-highlight .rch-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #6b5500;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 4px;
+      }
+      .result-cost-highlight .rch-value {
+        font-family: 'Ancizar Sans', system-ui, sans-serif;
+        font-size: 2.1rem;
+        font-weight: 700;
+        color: #2a1f00;
+        line-height: 1.1;
+      }
+
+      /* Metrics grid */
+      .result-grid {
+        display: grid;
+        gap: var(--space-sm);
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        margin-bottom: var(--space-md);
+      }
+      .result-item {
+        padding: var(--space-sm);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-sm);
+        background: var(--color-surface-2);
+      }
+      .result-item h4 {
+        margin: 0 0 4px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--color-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .result-value {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--color-text);
+      }
+      .result-subtext {
+        font-size: 0.82rem;
+        color: var(--color-muted);
+        margin-top: 3px;
+      }
+
+      /* Cost driver insight */
+      .result-cost-driver {
+        padding: var(--space-sm) var(--space-md);
+        border-left: 3px solid var(--color-secondary);
+        background: rgba(164, 214, 164, 0.08);
+        border-radius: 0 var(--r-sm) var(--r-sm) 0;
+        color: var(--color-text);
+        font-size: 0.93rem;
+        margin-bottom: var(--space-md);
+      }
+
+      /* Status badges */
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: var(--r-sm);
+        font-weight: 600;
+        font-size: 0.82rem;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface-2);
+        white-space: nowrap;
+      }
+      .status-healthy {
+        color: var(--color-primary);
+        border-color: rgba(14, 79, 71, 0.3);
+        background: rgba(14, 79, 71, 0.06);
+      }
+      .status-tight {
+        color: #b36b00;
+        border-color: rgba(179, 107, 0, 0.3);
+        background: rgba(179, 107, 0, 0.06);
+      }
+      .status-risk {
+        color: #b00020;
+        border-color: rgba(176, 0, 32, 0.25);
+        background: rgba(176, 0, 32, 0.06);
+      }
+
+      /* Seasonality nudge */
+      .seasonality-nudge {
+        display: none;
+        background: var(--color-surface-2);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-md);
+        padding: var(--space-md);
+        font-size: 0.9rem;
+        color: var(--color-muted);
+        margin-bottom: var(--space-md);
+      }
+
+      /* Disclaimer */
+      .disclaimer {
+        margin-top: var(--space-sm);
+        font-size: 0.85rem;
+        color: var(--color-muted);
+      }
+
+      /* ── CTA ──────────────────────────────────────────────────────────── */
+      .cta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--space-md);
+      }
+      #dish-capture {
+        display: none;
+      }
+
+      /* ── Ingredient field wrappers (per-field labels on mobile) ────────── */
+      .ing-field-wrap {
+        display: contents; /* desktop: children participate in parent grid */
+      }
+      .ing-field-label {
+        display: none; /* hidden on desktop, shown on mobile */
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--color-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 4px;
+      }
+      .cost-input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+      }
+      .cost-input-wrap input {
+        width: 100%;
+        padding-left: 24px;
+        padding-right: 40px;
+      }
+      .cost-input-wrap .cost-prefix {
+        position: absolute;
+        left: 9px;
+        font-weight: 600;
+        color: var(--color-muted);
+        pointer-events: none;
+        font-size: 0.9rem;
+        z-index: 1;
+      }
+      .cost-input-wrap .cost-unit-label {
+        position: absolute;
+        right: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--color-muted);
+        pointer-events: none;
+        white-space: nowrap;
+      }
+
+      /* ── Misc ─────────────────────────────────────────────────────────── */
+      .section-compact {
+        padding: var(--space-md) 0;
+      }
+      .intro-list {
+        list-style: disc;
+        padding-left: 1.2rem;
+        color: var(--color-muted);
+      }
+      .results-cue {
+        display: none;
+        font-size: 0.9rem;
+        color: var(--color-muted);
+        margin-top: var(--space-xs);
+      }
+      .faq-list {
+        margin-top: var(--space-md);
+        display: grid;
+        gap: var(--space-sm);
+      }
+      .faq-item {
+        padding: var(--space-md);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-sm);
+        background: var(--color-surface);
+      }
+      .faq-item strong {
+        display: block;
+        margin-bottom: var(--space-2xs);
+      }
+
+      /* ── Responsive ───────────────────────────────────────────────────── */
+      @media (min-width: 769px) {
+        .section-compact {
+          padding: var(--space-lg) 0;
+        }
+      }
+      @media (max-width: 600px) {
+        .dish-detail-row {
+          grid-template-columns: 1fr;
+        }
+        .ing-col-headers {
+          display: none;
+        }
+        .ingredient-row {
+          grid-template-columns: 1fr 1fr 38px;
+          grid-template-rows: auto auto auto;
+          gap: 8px;
+          align-items: start;
+        }
+        /* name full-width on row 1 */
+        .ingredient-row .ing-name-wrap {
+          grid-column: 1 / -1;
+          grid-row: 1;
+          display: flex;
+          flex-direction: column;
+        }
+        /* qty wrapper on row 2, col 1 */
+        .ingredient-row .ing-field-wrap:nth-child(2) {
+          grid-column: 1;
+          grid-row: 2;
+          display: flex;
+          flex-direction: column;
+        }
+        /* unit wrapper on row 2, col 2 */
+        .ingredient-row .ing-field-wrap:nth-child(3) {
+          grid-column: 2;
+          grid-row: 2;
+          display: flex;
+          flex-direction: column;
+        }
+        /* remove button on row 2, col 3 */
+        .ingredient-row .ing-remove {
+          grid-column: 3;
+          grid-row: 2;
+          align-self: end;
+        }
+        /* cost wrapper full-width on row 3 */
+        .ingredient-row .ing-field-wrap.cost-cell {
+          grid-column: 1 / -1;
+          grid-row: 3;
+          display: flex;
+          flex-direction: column;
+        }
+        .ingredient-row .ing-field-wrap.cost-cell .cost-input-wrap input {
+          padding-right: 12px; /* enough room without suffix on mobile */
+        }
+        .cost-unit-label {
+          display: none; /* hide the absolute suffix on mobile — label does the job */
+        }
+        .ing-field-label {
+          display: block;
+        }
+        .ingredient-row {
+          padding-bottom: var(--space-sm);
+          border-bottom: 1px solid var(--color-border);
+        }
+        .ingredient-rows .ingredient-row:last-child {
+          border-bottom: none;
+          padding-bottom: 0;
+        }
+        .cta-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 480px) {
+        .card {
+          padding: var(--space-md);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top-nav">
+      <div class="container">
+        <a class="brand" href="/tools/">
+          <img src="../shared/logo.svg" alt="Point Numera logo" />
+        </a>
+        <nav class="nav-links">
+          <a class="nav-link" data-nav href="/tools/">Tools Hub</a>
+          <a class="nav-link" data-nav href="/tools/dish-profitability-check/"
+            >Dish Profitability Check</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-wrap">
+      <section class="container hero">
+        <h1>Dish Profitability Checker</h1>
+        <p class="lead">
+          Enter one dish. See exactly what it costs you — and what it's
+          actually worth.
+        </p>
+        <ul class="intro-list">
+          <li>Break down ingredient costs by weight, volume, or unit</li>
+          <li>
+            Outputs: food cost %, gross margin, and your biggest cost driver
+          </li>
+          <li>No signup required — results are instant</li>
+        </ul>
+      </section>
+
+      <section class="container section section-compact">
+          <!-- ── Form ───────────────────────────────────────────────────── -->
+          <div class="card calc-card">
+            <form id="dish-form" class="form" novalidate>
+              <!-- Dish name -->
+              <div class="input-group">
+                <label for="dishName">Dish name</label>
+                <input
+                  id="dishName"
+                  name="dishName"
+                  type="text"
+                  placeholder="e.g., Beef burger"
+                  aria-label="Dish name (optional)"
+                />
+              </div>
+
+              <!-- Selling price + VAT -->
+              <div class="dish-detail-row">
+                <div class="input-group" style="margin-bottom: 0">
+                  <label for="sellingPrice"
+                    >Selling price excl. VAT (&euro;)</label
+                  >
+                  <div class="input-prefix-wrap">
+                    <span class="input-prefix" aria-hidden="true">€</span>
+                    <input
+                      id="sellingPrice"
+                      name="sellingPrice"
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      placeholder="12.50"
+                      required
+                    />
+                  </div>
+                  <div class="helper-text">
+                    Enter the price you charge, excluding VAT.
+                  </div>
+                </div>
+                <div class="input-group" style="margin-bottom: 0">
+                  <label for="vatRate">VAT rate</label>
+                  <select id="vatRate" name="vatRate">
+                    <option value="9">9% (standard food in NL)</option>
+                    <option value="21">21%</option>
+                    <option value="0">0%</option>
+                  </select>
+                  <div class="helper-text">
+                    For reference — calculations use excl. VAT price.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ingredient rows -->
+              <div class="ingredient-section">
+                <div class="ingredient-section-header">
+                  <h4>Ingredients</h4>
+                  <button
+                    type="button"
+                    id="addIngredientBtn"
+                    class="btn btn-ghost add-ing-btn"
+                  >
+                    + Add ingredient
+                  </button>
+                </div>
+                <div class="ing-col-headers" aria-hidden="true">
+                  <span>Ingredient</span>
+                  <span>Qty</span>
+                  <span>Unit</span>
+                  <span>Cost per unit</span>
+                  <span></span>
+                </div>
+                <div class="ingredient-rows" id="ingredientRows"></div>
+              </div>
+
+              <!-- Target food cost % -->
+              <div class="target-row">
+                <div class="input-group" style="margin-bottom: 0">
+                  <label for="targetFoodCost">Target food cost %</label>
+                  <div class="input-suffix-wrap">
+                    <input
+                      id="targetFoodCost"
+                      name="targetFoodCost"
+                      type="number"
+                      min="1"
+                      max="99"
+                      step="1"
+                      value="30"
+                      required
+                    />
+                    <span class="input-suffix">%</span>
+                  </div>
+                  <div class="helper-text">
+                    Benchmark: 25–35% for most restaurants.
+                  </div>
+                </div>
+              </div>
+
+              <div
+                id="formError"
+                class="error-text"
+                aria-live="polite"
+                style="display: none"
+              ></div>
+
+              <button
+                type="submit"
+                class="btn btn-primary"
+                style="margin-top: var(--space-md)"
+              >
+                Check this dish
+              </button>
+              <div id="resultsCue" class="results-cue">Results below ↓</div>
+            </form>
+          </div>
+
+          <!-- ── Results card (revealed after calculation) ─────────────── -->
+          <div id="results" class="card results-card" aria-live="polite">
+            <div id="results-anchor" aria-hidden="true"></div>
+
+            <div id="resultsContent" class="results-content">
+              <div class="result-header">
+                <span id="resultDishName" class="result-dish-name">—</span>
+                <span id="statusBadge" class="status-badge">—</span>
+              </div>
+
+              <div class="result-cost-highlight">
+                <div class="rch-label">
+                  Total ingredient cost per portion
+                </div>
+                <div
+                  id="resultTotalCost"
+                  class="rch-value"
+                  aria-label="Total ingredient cost per portion"
+                >
+                  —
+                </div>
+              </div>
+
+              <div class="result-grid">
+                <div class="result-item">
+                  <h4>Food cost %</h4>
+                  <div id="resultFoodCostPct" class="result-value">—</div>
+                  <div id="resultFoodCostCtx" class="result-subtext"></div>
+                </div>
+                <div class="result-item">
+                  <h4>Gross margin</h4>
+                  <div id="resultMarginEur" class="result-value">—</div>
+                </div>
+                <div class="result-item">
+                  <h4>Gross margin %</h4>
+                  <div id="resultMarginPct" class="result-value">—</div>
+                </div>
+              </div>
+
+              <div
+                id="resultCostDriver"
+                class="result-cost-driver"
+                style="display: none"
+              ></div>
+
+              <div id="seasonalityNudge" class="seasonality-nudge">
+                Ingredient costs shift with the seasons. If the price of a key
+                ingredient rises, re-run this check to see the impact on your
+                margin — and decide whether to reprice or swap it out.
+              </div>
+
+              <p class="disclaimer">
+                Selling price is entered excl. VAT. Food cost % = total
+                ingredient cost ÷ selling price excl. VAT. Labour, waste, and
+                overhead are not included — they apply at the business level.
+              </p>
+            </div>
+          </div>
+      </section>
+
+      <!-- ── CTA ─────────────────────────────────────────────────────────── -->
+      <section id="dish-capture" class="container section-compact">
+        <div class="cta-grid">
+          <!-- Card 1: Email capture -->
+          <div class="card capture-card">
+            <div class="capture-content">
+              <h3>Get a free dish cost breakdown template</h3>
+              <p>
+                A spreadsheet to map out ingredient costs, food cost %, and
+                margin for any dish — with benchmarks built in.
+              </p>
+            </div>
+            <form
+              id="dishCaptureForm"
+              class="capture-form"
+              data-capture
+              action="https://assets.mailerlite.com/jsonp/PLACEHOLDER/forms/PLACEHOLDER/subscribe"
+              method="post"
+            >
+              <input type="hidden" name="ml-submit" value="1" />
+              <input type="hidden" name="anticsrf" value="true" />
+              <input
+                type="hidden"
+                name="fields[source_tool]"
+                value="dish_profitability_check"
+              />
+              <div class="row-form">
+                <div class="capture-fields">
+                  <div class="form-row capture-hide-on-success">
+                    <label for="dishCaptureName">Name (optional)</label>
+                    <input
+                      id="dishCaptureName"
+                      type="text"
+                      name="fields[name]"
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div class="form-row capture-hide-on-success">
+                    <label for="dishCaptureEmail">Email</label>
+                    <input
+                      id="dishCaptureEmail"
+                      type="email"
+                      name="fields[email]"
+                      placeholder="you@example.com"
+                      required
+                    />
+                  </div>
+                  <div class="form-row checkbox-row capture-hide-on-success">
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="fields[consent_checkbox]"
+                        value="yes"
+                        required
+                      />
+                      <span
+                        >I agree to receive the template and occasional
+                        updates.</span
+                      >
+                    </label>
+                  </div>
+                  <div class="form-actions">
+                    <button
+                      type="submit"
+                      class="btn btn-primary capture-hide-on-success"
+                    >
+                      Send it to me
+                    </button>
+                  </div>
+                </div>
+                <div class="form-msg" aria-live="polite"></div>
+              </div>
+              <div class="row-success" style="display: none">
+                <div class="form-msg" aria-live="polite"></div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Card 2: Booking -->
+          <div class="card">
+            <h3>Book a free 20-min dish review call</h3>
+            <p>
+              Walk through your numbers with a fractional CFO. We'll look at
+              which dishes are dragging your margins and what to do about it.
+            </p>
+            <div class="form-actions" style="margin-top: var(--space-sm)">
+              <a
+                class="btn btn-primary"
+                href="https://cal.com/pointnumera"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Book a free 20-min call →</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── FAQ ─────────────────────────────────────────────────────────── -->
+      <section class="container section section-compact">
+        <h2>FAQ</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <strong>What is food cost %?</strong>
+            <p>
+              Your total ingredient cost per portion divided by the selling
+              price (excl. VAT), as a percentage. A 30% food cost means €0.30
+              of every euro of revenue goes on ingredients.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>What's a healthy food cost for a restaurant?</strong>
+            <p>
+              Most restaurants target 25–35%. Fine dining can go lower;
+              high-volume casual often runs higher. The right number depends on
+              your labour model, waste levels, and overhead.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>Why do I enter prices excluding VAT?</strong>
+            <p>
+              VAT is collected on behalf of the tax authority — it's not your
+              revenue. Measuring food cost against your excl. VAT price gives a
+              cleaner view of your actual margin.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>What do Healthy / Tight / Risk mean?</strong>
+            <p>
+              They compare your dish's food cost % to your target. Healthy =
+              below target. Tight = within 5pp above. Risk = more than 5pp
+              above — that dish is eroding your margin.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>Does this include labour or overhead?</strong>
+            <p>
+              No. This tool focuses on ingredient cost vs. selling price.
+              Labour, rent, and energy apply at the business level. Use this to
+              flag whether a dish is worth investigating further.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>Do you store my data?</strong>
+            <p>
+              No. All calculations run in your browser. Nothing is saved or
+              transmitted unless you choose to submit your email.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="scrollCue" class="pn-scroll-cue">
+      <span id="scrollCueText" class="pn-scroll-cue-text"
+        >↓ Results &amp; dish template below</span
+      >
+      <span class="pn-scroll-cue-action">Jump</span>
+    </div>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is food cost %?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Your total ingredient cost per portion divided by the selling price (excl. VAT), as a percentage. A 30% food cost means €0.30 of every euro of revenue goes on ingredients."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What's a healthy food cost for a restaurant?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Most restaurants target 25–35%. Fine dining can go lower; high-volume casual often runs higher. The right number depends on your labour model, waste levels, and overhead."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Why do I enter prices excluding VAT?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "VAT is collected on behalf of the tax authority — it's not your revenue. Measuring food cost against your excl. VAT price gives a cleaner view of your actual margin."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What do Healthy / Tight / Risk mean?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "They compare your dish's food cost % to your target. Healthy = below target. Tight = within 5pp above. Risk = more than 5pp above — that dish is eroding your margin."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does this include labour or overhead?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. This tool focuses on ingredient cost vs. selling price. Labour, rent, and energy apply at the business level. Use this to flag whether a dish is worth investigating further."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do you store my data?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. All calculations run in your browser. Nothing is saved or transmitted unless you choose to submit your email."
+            }
+          }
+        ]
+      }
+    </script>
+
+    <script>
+      // ── Constants ────────────────────────────────────────────────────────
+      const MAX_INGREDIENTS = 8;
+      const MIN_INGREDIENTS = 1;
+      let ingCount = 0;
+
+      // ── Element refs ─────────────────────────────────────────────────────
+      const ingRowsEl         = document.getElementById('ingredientRows');
+      const addIngBtn         = document.getElementById('addIngredientBtn');
+      const formErrorEl       = document.getElementById('formError');
+      const resultsEl         = document.getElementById('results');
+      const resultsAnchor     = document.getElementById('results-anchor');
+      const resultsContent    = document.getElementById('resultsContent');
+      const resultDishNameEl  = document.getElementById('resultDishName');
+      const statusBadgeEl     = document.getElementById('statusBadge');
+      const resultTotalCostEl = document.getElementById('resultTotalCost');
+      const resultFoodCostPctEl = document.getElementById('resultFoodCostPct');
+      const resultFoodCostCtxEl = document.getElementById('resultFoodCostCtx');
+      const resultMarginEurEl = document.getElementById('resultMarginEur');
+      const resultMarginPctEl = document.getElementById('resultMarginPct');
+      const resultCostDriverEl= document.getElementById('resultCostDriver');
+      const seasonalityNudgeEl= document.getElementById('seasonalityNudge');
+      const dishCaptureEl     = document.getElementById('dish-capture');
+      const scrollCueEl       = document.getElementById('scrollCue');
+      const scrollCueTextEl   = document.getElementById('scrollCueText');
+      const rootStyle         = document.documentElement.style;
+
+      let scrollCueStep = 0;
+
+      // ── Formatting helpers ───────────────────────────────────────────────
+      const fmtCurrency = (v) =>
+        new Intl.NumberFormat('en-IE', {
+          style: 'currency',
+          currency: 'EUR',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(v);
+
+      const fmtPct = (v) => `${v.toFixed(1)}%`;
+
+      const escHtml = (s) =>
+        String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+
+      // ── Unit definitions ─────────────────────────────────────────────────
+      const UNITS = {
+        g:    { suffix: '/ kg',    aria: 'Cost per kg',     calc: (q, c) => (q / 1000) * c },
+        kg:   { suffix: '/ kg',    aria: 'Cost per kg',     calc: (q, c) => q * c           },
+        ml:   { suffix: '/ L',     aria: 'Cost per litre',  calc: (q, c) => (q / 1000) * c },
+        L:    { suffix: '/ L',     aria: 'Cost per litre',  calc: (q, c) => q * c           },
+        oz:   { suffix: '/ lb',    aria: 'Cost per lb',     calc: (q, c) => (q / 16) * c    },
+        lb:   { suffix: '/ lb',    aria: 'Cost per lb',     calc: (q, c) => q * c           },
+        floz: { suffix: '/ fl oz', aria: 'Cost per fl oz',  calc: (q, c) => q * c           },
+        pcs:  { suffix: '/ pcs',   aria: 'Cost per piece',  calc: (q, c) => q * c           },
+      };
+
+      // ── Status logic ─────────────────────────────────────────────────────
+      function getStatus(foodCostPct, target) {
+        if (foodCostPct < target) return 'healthy';
+        if (foodCostPct <= target + 5) return 'tight';
+        return 'risk';
+      }
+
+      function statusInfo(status) {
+        return {
+          healthy: { label: 'Healthy', cls: 'status-healthy' },
+          tight:   { label: 'Tight',   cls: 'status-tight'   },
+          risk:    { label: 'Risk',     cls: 'status-risk'    },
+        }[status];
+      }
+
+      // ── Ingredient row management ────────────────────────────────────────
+      function updateUnitLabel(row) {
+        const unit = row.querySelector('.ing-unit').value;
+        const unitDef = UNITS[unit] || UNITS.g;
+        row.querySelector('.cost-unit-label').textContent = unitDef.suffix;
+        const costInput = row.querySelector('.ing-cost');
+        costInput.setAttribute('aria-label', `${unitDef.aria} (€)`);
+      }
+
+      function createIngredientRow(idx) {
+        const div = document.createElement('div');
+        div.className = 'ingredient-row';
+        div.innerHTML = `
+          <div class="ing-field-wrap ing-name-wrap">
+            <span class="ing-field-label" aria-hidden="true">Ingredient</span>
+            <input
+              class="ing-name"
+              type="text"
+              name="ing_name_${idx}"
+              placeholder="e.g., Chicken breast"
+              aria-label="Ingredient name (optional)"
+            />
+          </div>
+          <div class="ing-field-wrap">
+            <span class="ing-field-label" aria-hidden="true">Qty</span>
+            <input
+              class="ing-qty"
+              type="number"
+              name="ing_qty_${idx}"
+              min="0"
+              step="any"
+              placeholder="200"
+              aria-label="Quantity per portion"
+            />
+          </div>
+          <div class="ing-field-wrap">
+            <span class="ing-field-label" aria-hidden="true">Unit</span>
+            <select class="ing-unit" name="ing_unit_${idx}" aria-label="Unit">
+              <option value="g">g (grams)</option>
+              <option value="kg">kg (kilograms)</option>
+              <option value="ml">ml (millilitres)</option>
+              <option value="L">L (litres)</option>
+              <option value="oz">oz (ounces, cost per lb)</option>
+              <option value="lb">lb (pounds)</option>
+              <option value="floz">fl oz (fluid ounces)</option>
+              <option value="pcs">pcs (pieces / each)</option>
+            </select>
+          </div>
+          <div class="ing-field-wrap cost-cell">
+            <span class="ing-field-label" aria-hidden="true">Cost per unit</span>
+            <div class="cost-input-wrap">
+              <span class="cost-prefix" aria-hidden="true">€</span>
+              <input
+                class="ing-cost"
+                type="number"
+                name="ing_cost_${idx}"
+                min="0"
+                step="any"
+                placeholder="8.50"
+                aria-label="Cost per kg (€)"
+              />
+              <span class="cost-unit-label" aria-hidden="true">/ kg</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="ing-remove"
+            aria-label="Remove ingredient"
+            title="Remove ingredient"
+          >&times;</button>
+        `;
+
+        div.querySelector('.ing-unit').addEventListener('change', () =>
+          updateUnitLabel(div)
+        );
+        div.querySelector('.ing-remove').addEventListener('click', () =>
+          removeIngredientRow(div)
+        );
+        return div;
+      }
+
+      function removeIngredientRow(row) {
+        const rows = ingRowsEl.querySelectorAll('.ingredient-row');
+        if (rows.length <= MIN_INGREDIENTS) return;
+        row.remove();
+        updateIngControls();
+      }
+
+      function updateIngControls() {
+        const rows  = ingRowsEl.querySelectorAll('.ingredient-row');
+        const count = rows.length;
+        addIngBtn.disabled      = count >= MAX_INGREDIENTS;
+        addIngBtn.style.opacity = count >= MAX_INGREDIENTS ? '0.4' : '';
+        rows.forEach((r) => {
+          r.querySelector('.ing-remove').disabled = count <= MIN_INGREDIENTS;
+        });
+      }
+
+      function addIngredientRow() {
+        if (ingRowsEl.querySelectorAll('.ingredient-row').length >= MAX_INGREDIENTS)
+          return;
+        ingCount++;
+        const row = createIngredientRow(ingCount);
+        ingRowsEl.appendChild(row);
+        updateIngControls();
+        row.querySelector('input[type="text"]').focus();
+      }
+
+      // Initialise 3 rows
+      for (let i = 0; i < 3; i++) {
+        ingCount++;
+        ingRowsEl.appendChild(createIngredientRow(ingCount));
+      }
+      updateIngControls();
+
+      addIngBtn.addEventListener('click', addIngredientRow);
+
+      // ── Scroll cue ───────────────────────────────────────────────────────
+      function showScrollCue(text) {
+        if (!scrollCueEl) return;
+        scrollCueStep = 0;
+        scrollCueTextEl.textContent = text || '↓ Results below';
+        scrollCueEl.style.display = 'flex';
+        document.body.classList.add('pn-scroll-padding');
+        const h = scrollCueEl.getBoundingClientRect().height || 0;
+        rootStyle.setProperty('--pn-sticky-offset', `${h + 16}px`);
+      }
+
+      function hideScrollCue() {
+        if (!scrollCueEl) return;
+        scrollCueEl.style.display = 'none';
+        document.body.classList.remove('pn-scroll-padding');
+        rootStyle.setProperty('--pn-sticky-offset', '0px');
+      }
+
+      scrollCueEl && scrollCueEl.addEventListener('click', () => {
+        if (scrollCueStep === 0) {
+          resultsEl &&
+            resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          scrollCueStep = 1;
+          scrollCueTextEl.textContent = '↓ Get the dish template';
+        } else {
+          if (dishCaptureEl) {
+            dishCaptureEl.style.display = 'block';
+            const top =
+              dishCaptureEl.getBoundingClientRect().top + window.scrollY - 70;
+            window.scrollTo({ top, behavior: 'smooth' });
+          }
+          hideScrollCue();
+        }
+      });
+
+      // ── Form submit ──────────────────────────────────────────────────────
+      document.getElementById('dish-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        // Clear previous errors
+        formErrorEl.style.display = 'none';
+        ingRowsEl
+          .querySelectorAll('input[type="number"]')
+          .forEach((inp) => inp.classList.remove('input-error'));
+        document
+          .getElementById('sellingPrice')
+          .classList.remove('input-error');
+
+        // Validate selling price
+        const sellingPrice = parseFloat(
+          document.getElementById('sellingPrice').value
+        );
+        if (isNaN(sellingPrice) || sellingPrice <= 0) {
+          document
+            .getElementById('sellingPrice')
+            .classList.add('input-error');
+          formErrorEl.textContent =
+            'Enter a selling price greater than 0.';
+          formErrorEl.style.display = 'block';
+          return;
+        }
+
+        // Validate target food cost %
+        const targetFoodCost = parseFloat(
+          document.getElementById('targetFoodCost').value
+        );
+        if (
+          isNaN(targetFoodCost) ||
+          targetFoodCost <= 0 ||
+          targetFoodCost >= 100
+        ) {
+          formErrorEl.textContent =
+            'Enter a target food cost % between 1 and 99.';
+          formErrorEl.style.display = 'block';
+          return;
+        }
+
+        // Collect and validate ingredient rows
+        const rows = Array.from(
+          ingRowsEl.querySelectorAll('.ingredient-row')
+        );
+        const ingredients = [];
+        let hasRowError = false;
+
+        rows.forEach((row, i) => {
+          const nameInput = row.querySelector('.ing-name');
+          const qtyInput  = row.querySelector('.ing-qty');
+          const unitSel   = row.querySelector('.ing-unit');
+          const costInput = row.querySelector('.ing-cost');
+
+          const name = nameInput.value.trim() || `Ingredient ${i + 1}`;
+          const qty  = parseFloat(qtyInput.value);
+          const unit = unitSel.value;
+          const cost = parseFloat(costInput.value);
+
+          const qtyEmpty  = qtyInput.value.trim() === '';
+          const costEmpty = costInput.value.trim() === '';
+
+          // Fully empty rows → skip silently
+          if (qtyEmpty && costEmpty) return;
+
+          // Partially filled → flag as error
+          const qtyOk  = !qtyEmpty  && !isNaN(qty)  && qty  > 0;
+          const costOk = !costEmpty && !isNaN(cost) && cost > 0;
+
+          if (!qtyOk)  { qtyInput.classList.add('input-error');  hasRowError = true; }
+          if (!costOk) { costInput.classList.add('input-error'); hasRowError = true; }
+
+          if (qtyOk && costOk) {
+            const unitDef = UNITS[unit] || UNITS.g;
+            const costPerPortion = unitDef.calc(qty, cost);
+            ingredients.push({ name, qty, unit, cost, costPerPortion });
+          }
+        });
+
+        if (hasRowError) {
+          formErrorEl.textContent =
+            'Check highlighted fields: quantity and cost must both be filled in and greater than 0.';
+          formErrorEl.style.display = 'block';
+          return;
+        }
+
+        if (ingredients.length === 0) {
+          formErrorEl.textContent =
+            'Add at least one ingredient with a quantity and cost.';
+          formErrorEl.style.display = 'block';
+          return;
+        }
+
+        // ── Calculate ────────────────────────────────────────────────────
+        const totalIngredientCost = ingredients.reduce(
+          (s, ing) => s + ing.costPerPortion,
+          0
+        );
+        const foodCostPct = (totalIngredientCost / sellingPrice) * 100;
+        const marginEur   = sellingPrice - totalIngredientCost;
+        const marginPct   = (marginEur / sellingPrice) * 100;
+        const status      = getStatus(foodCostPct, targetFoodCost);
+        const info        = statusInfo(status);
+
+        // Biggest cost driver
+        const biggest = [...ingredients].sort(
+          (a, b) => b.costPerPortion - a.costPerPortion
+        )[0];
+
+        // Dish name
+        const dishName =
+          document.getElementById('dishName').value.trim() || 'Your dish';
+
+        // Food cost context line
+        const diff = Math.abs(foodCostPct - targetFoodCost);
+        const diffText =
+          foodCostPct < targetFoodCost
+            ? `${diff.toFixed(1)}pp below your ${targetFoodCost}% target`
+            : foodCostPct === targetFoodCost
+            ? `at your ${targetFoodCost}% target`
+            : `${diff.toFixed(1)}pp above your ${targetFoodCost}% target`;
+
+        // ── Populate results ─────────────────────────────────────────────
+        resultDishNameEl.textContent = dishName;
+
+        statusBadgeEl.textContent = info.label;
+        statusBadgeEl.className   = `status-badge ${info.cls}`;
+
+        resultTotalCostEl.textContent = fmtCurrency(totalIngredientCost);
+
+        resultFoodCostPctEl.textContent = fmtPct(foodCostPct);
+        resultFoodCostCtxEl.textContent = `${fmtPct(foodCostPct)} food cost — ${diffText}`;
+
+        resultMarginEurEl.textContent = fmtCurrency(marginEur);
+        resultMarginPctEl.textContent = fmtPct(marginPct);
+
+        if (ingredients.length > 1) {
+          resultCostDriverEl.textContent =
+            `${escHtml(biggest.name)} accounts for ${fmtCurrency(biggest.costPerPortion)} ` +
+            `of your ${fmtCurrency(totalIngredientCost)} total ingredient cost.`;
+          resultCostDriverEl.style.display = 'block';
+        } else {
+          resultCostDriverEl.style.display = 'none';
+        }
+
+        seasonalityNudgeEl.style.display = 'block';
+
+        // ── Show results ─────────────────────────────────────────────────
+        resultsEl.style.display = 'block';
+        resultsContent.classList.add('visible');
+
+        if (dishCaptureEl) dishCaptureEl.style.display = 'block';
+        showScrollCue('↓ Results & dish template below');
+      });
+    </script>
+  </body>
+</html>
