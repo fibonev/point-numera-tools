@@ -2,6 +2,7 @@
 > For use by Claude Code, Codex, and any coding/design session.
 > Last updated: [DATE]
 > See kb-content.md for brand voice, ICP, and content strategy.
+> See kb-tools.md for tool-specific architecture and build rules.
 
 ---
 
@@ -29,8 +30,11 @@
 | Border | Dark border | `#1e2e2b` |
 | Text primary | Off-white | `#f0ede4` |
 | Text muted | Muted teal-grey | `#8a9e9a` |
+| Error | Red | `#e65c5c` |
+| Success | Green | `#4ecb71` |
+| Warning | Amber | `#e6c35c` |
 
-### CSS Variables (use these in all builds)
+### CSS Variables
 ```css
 :root {
   --green-primary: #0E4F47;
@@ -41,6 +45,9 @@
   --dark-border: #1e2e2b;
   --text-primary: #f0ede4;
   --text-muted: #8a9e9a;
+  --error: #e65c5c;
+  --success: #4ecb71;
+  --warning: #e6c35c;
 }
 ```
 
@@ -51,143 +58,243 @@
 | Role | Font | Weights |
 |---|---|---|
 | Headings | Ancizar Sans | Variable 100–900, use 600–700 for headings |
-| Body | PT Sans | 400 (regular), 700 (bold), 400 italic |
+| Body | PT Sans | 400 regular, 700 bold, 400 italic |
 
-- Ancizar Sans is a variable font (.ttf), hosted locally in the Framer project
-- PT Sans loaded from Google Fonts: `https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap`
-- Heading sizes: H1 ~52–64px, H2 ~36–42px, H3 ~24px
+- Ancizar Sans: variable font (.ttf), hosted locally in Framer project
+- PT Sans: Google Fonts — `https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap`
+- H1: 52–64px · H2: 36–42px · H3: 24px
 - Body: 16px, line-height 1.7
 - Eyebrow labels: 11–12px, uppercase, letter-spacing 0.1em
 
 ---
 
-## 4. Site Section Colour Pattern
+## 4. Spacing System
 
-The live site uses an **alternating section background** rhythm — this is the core visual structure. All new pages must follow it:
+```css
+:root {
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 32px;
+  --space-xl: 64px;
+  --space-xxl: 96px;
+}
+```
 
-| Section type | Background | Text |
-|---|---|---|
-| Hero | `#0a0f0e` (near-black) | `#f0ede4` (off-white) |
-| Feature / card sections | `#A4D6A4` (secondary green) | `#0a0f0e` (dark) |
-| Pricing / CTA / contact | `#0E4F47` (primary green) | `#f0ede4` (off-white) |
-| About / editorial content | White or off-white | `#0a0f0e` (dark) |
-| Footer | `#0E4F47` or `#0a0f0e` | `#f0ede4` |
-
-Never use the same background for two consecutive sections.
+**Rules:**
+- Section padding: 80–120px top/bottom
+- Card padding: 24–32px
+- Button padding: 12px 24px
+- Input padding: 12px 14px
+- Gap between cards: 24px
 
 ---
 
-## 5. Navigation
+## 5. Border Radius
 
-- **Sticky nav**, dark green `#0E4F47` background when scrolled, transparent over dark hero
-- Logo: wordmark "Point Numera" with a geometric bracket/page-fold icon to the left
+```css
+:root {
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+}
+```
+
+**Rules:**
+- Buttons → `--radius-pill`
+- Cards → `--radius-md`
+- Tool containers → `--radius-md`
+- Input fields → 6px
+
+---
+
+## 6. Shadows
+
+The main site uses a flat design — no shadows. Keep tools consistent with this.
+
+Exception: a subtle shadow may be used on result cards inside tools where elevation helps identify the primary output:
+```css
+--shadow-card: 0 10px 30px rgba(0, 0, 0, 0.25);
+```
+Use sparingly — only when it aids clarity, never for decoration.
+
+---
+
+## 7. Grid & Layout
+
+```
+Max container width: 1200px
+Content / text width: 720px
+Column gap: 24px
+```
+
+**For tools:**
+- Desktop: two-column where useful (inputs left, results right)
+- Mobile: single column, stacked
+- Tool container max-width: 960px
+
+---
+
+## 8. Form Input Design
+
+```css
+input, select, textarea {
+  background: #111a18;
+  border: 1px solid #1e2e2b;
+  color: #f0ede4;
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-family: 'PT Sans', sans-serif;
+  font-size: 16px;
+}
+
+input:focus {
+  border-color: #F4ECBD;
+  outline: none;
+}
+
+input:hover {
+  border-color: #A4D6A4;
+}
+
+input.error {
+  border-color: #e65c5c;
+}
+```
+
+- Labels: `#f0ede4`, 14px, PT Sans, margin-bottom 6px
+- Helper text: `#8a9e9a`, 12px, below the input
+
+---
+
+## 9. Section Background Pattern
+
+The live site alternates section backgrounds — this is the core visual rhythm. Never use the same background for two consecutive sections.
+
+| Section type | Background | Text colour |
+|---|---|---|
+| Hero | `#0a0f0e` (near-black) | `#f0ede4` |
+| Feature / card sections | `#A4D6A4` (secondary green) | `#0a0f0e` |
+| Pricing / CTA / contact | `#0E4F47` (primary green) | `#f0ede4` |
+| About / editorial | White or off-white | `#0a0f0e` |
+| Footer | `#0E4F47` or `#0a0f0e` | `#f0ede4` |
+
+---
+
+## 10. Navigation
+
+- Sticky nav, `#0E4F47` background on scroll, transparent over dark hero
+- Logo: wordmark "Point Numera" with geometric bracket/page-fold icon left
 - Nav links: Services, Process, Pricing, About, FAQ
 - CTA button: "Get in touch" — outlined pill style
-- Mobile: hamburger menu (three lines icon, top right)
+- Mobile: hamburger menu top right
 - No dropdown menus
 
 ---
 
-## 6. UI Patterns & Components
+## 11. UI Patterns & Components
 
 ### Eyebrow label
-Small section identifier above H2s. Pattern:
 ```
-[logo icon] Section Name
+[PN icon] SECTION NAME
 ```
-- Icon: the PN bracket icon (SVG), ~16px
-- Text: 13–14px, same colour as heading but lighter weight
+- Icon: PN bracket SVG ~16px
+- Text: 13–14px, uppercase, letter-spacing 0.1em
 - Used at the start of every major section
 
 ### Service / feature cards
-- Full-width card on `#A4D6A4` background
+- Full-width on `#A4D6A4` background
 - Number label top-left (01, 02, 03...) in small text
 - H3 heading, 2–3 line description
-- Outlined CTA button ("FIND OUT MORE") — dark border, dark text, no fill
-- No image visible on standard viewport (image may be decorative/background)
+- Outlined CTA button — dark border, dark text, no fill
 
 ### Buttons
-- Primary CTA: filled `#F4ECBD` (yellow) background, dark text — used sparingly for hero CTAs
-- Secondary / outlined: transparent background, border in current text colour
+- Primary CTA: `#F4ECBD` fill, dark text — hero CTAs only
+- Secondary / outlined: transparent, border matches text colour
 - All caps label, moderate letter-spacing
-- Pill or slightly rounded rectangle shape
+- Shape: pill (`--radius-pill`)
 
-### Inner page hero (template pattern)
-- Full-width dark green (`#0E4F47`) background section
-- Small eyebrow label centered (e.g. "FREE RESOURCE" or "TOOLS")
-- Large H1 centered, subtitle text below
-- Optional decorative abstract shape in background (darker green tone)
-
-### Content sections (inner pages)
-- Near-black background (`#0a0f0e`)
-- Left-aligned body text, PT Sans
-- Bullet lists use `•` with generous line spacing
-- Section headers ("Client support includes:", "Benefits:") in semi-bold
+### Inner page hero
+- Full-width `#0E4F47` background
+- Small eyebrow label centred (e.g. "FREE TOOL")
+- Large H1 centred, subtitle below
+- Optional decorative abstract shape in darker green tone
 
 ---
 
-## 7. Site Architecture
+## 12. Logo & Brand Mark
+
+- Wordmark: "Point Numera" with geometric bracket/page-fold icon
+- White on dark backgrounds, dark on light backgrounds
+- Do not recreate — use existing Framer asset
+- Framer CDN: `https://framerusercontent.com/images/AoPfCAxRNXza13jDgsO8Uvs.svg`
+
+---
+
+## 13. Site Architecture
 
 | Page | Platform | URL | Notes |
 |---|---|---|---|
-| Main site (all sections) | Framer | pointnumera.com | Single-page with anchors |
-| Blog | Framer | pointnumera.com/blog | TBD — to be added in Framer |
-| Partners | Framer | pointnumera.com/partners | TBD — to be added in Framer |
-| Tools / Lead magnets | Framer (embed) or separate | pointnumera.com/tools | See Section 8 |
+| Main site | Framer | pointnumera.com | Single-page with anchors |
+| Blog | Framer | pointnumera.com/blog | To be built in Framer |
+| Partners | Framer | pointnumera.com/partners | To be built in Framer |
+| Tool landing pages | Framer | pointnumera.com/tools/[tool-name] | SEO pages — embed or link to tool |
+| Tool files (functional) | GitHub Pages | fibonev.github.io/point-numera-tools/tools/[tool-name] | Calculator logic |
 
-**Previous approach (deprecated):** Jekyll + GitHub Pages + Cloudflare proxy for blog/partners/tools.
-**Current approach:** Keep everything in Framer where possible for visual consistency.
+**Deprecated:** Jekyll + Cloudflare proxy approach — do not use.
 
 ---
 
-## 8. Tools Page — Embed Strategy
+## 14. SEO Architecture for Tools
 
-Interactive tools (calculators, dashboards) can be embedded in Framer using the **Embed component**:
+Tools run on GitHub Pages. SEO lives on the Framer site.
 
-### Option A — Framer Embed (preferred for simple tools)
-- Build tool as a self-contained HTML/CSS/JS file
-- Host on GitHub Pages as a single `.html` file (no Jekyll needed)
-- Embed via `<iframe>` in Framer's Embed component
-- Style the iframe container to match the section background
-- Set `background: transparent` on the iframe body so it blends with the PN dark theme
+1. Build the tool as a static HTML/CSS/JS file on GitHub Pages
+2. Create a landing page on Framer at `pointnumera.com/tools/[tool-name]`
+3. The Framer page contains: H1, intro copy, embedded tool (iframe), explanatory text, FAQ, CTA
+4. Write blog posts on Framer that link to tool landing pages
+5. Google indexes Framer pages — PN domain gets the authority, not GitHub
 
-### Option B — Full Framer page (for very simple tools)
-- Build the tool logic directly in Framer using Code Components (React)
-- Suitable for simple input/output calculators with minimal state
-
-### Iframe embed code pattern:
+**Iframe embed pattern:**
 ```html
 <iframe
-  src="https://YOUR_GITHUB_USERNAME.github.io/pn-tools/menu-margin-calculator.html"
+  src="https://fibonev.github.io/point-numera-tools/tools/[tool-name]/index.html"
   width="100%"
-  height="600px"
+  height="700px"
   frameborder="0"
-  style="border-radius: 8px; background: transparent;"
+  style="border-radius: 8px;"
 ></iframe>
 ```
 
-### Tool styling rules (for embedded tools)
-- Background: `#0a0f0e` or `#111a18` — must match PN dark theme
+---
+
+## 15. Tool Styling Rules
+
+- Background: `#0a0f0e` or `#111a18` — never white
 - Text: `#f0ede4`
-- Input fields: `#1e2e2b` border, `#111a18` background
-- Accent/highlight: `#F4ECBD` (yellow) for results, CTAs
-- Font: PT Sans (load from Google Fonts in the tool's `<head>`)
-- No white backgrounds — the tool should feel like it's part of the PN site
+- Inputs: follow Section 8 exactly
+- Result highlight: `#F4ECBD` (yellow)
+- Secondary accent: `#A4D6A4`
+- Font: PT Sans from Google Fonts
+- No external UI libraries (no Bootstrap, Tailwind, Material UI)
+- Vanilla JS only unless there is a strong reason otherwise
 
 ---
 
-## 9. Current Lead Magnets / Tools
+## 16. AI Build Rules
 
-| Tool | Target ICP | Format | Status |
-|---|---|---|---|
-| Menu Margin Calculator | Restaurant operators | Web (HTML/JS) | Planned |
-| Forecast Dashboard | Hardware/manufacturing SMEs | Excel (.xlsx) | Built (V2) |
+**Always use:**
+- PN colour variables from Section 2
+- PT Sans for body/UI, Ancizar Sans for headings
+- Dark theme — `#0a0f0e` or `#111a18`
+- Alternating section backgrounds per Section 9
+- Pill-shaped buttons
+- Plain-language labels
 
----
-
-## 10. Logo & Brand Mark
-
-- Wordmark: "Point Numera" — geometric bracket/page-fold icon to the left of text
-- Icon is an SVG — white on dark backgrounds, dark on light backgrounds
-- Do not recreate the icon from scratch — reference the live site asset
-- Framer asset URL: `https://framerusercontent.com/images/AoPfCAxRNXza13jDgsO8Uvs.svg`
+**Never use:**
+- White backgrounds
+- Generic SaaS colour palettes (blue, purple, etc.)
+- External UI frameworks
+- Shadows except the defined card shadow
+- Unnecessary animations
