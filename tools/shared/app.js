@@ -10,7 +10,7 @@
   navLinks.forEach((link) => {
     const targetPathRaw = new URL(link.getAttribute('href'), window.location.origin).pathname.replace(/\/+/g, '/');
     const targetPath = targetPathRaw.endsWith('/') ? targetPathRaw : `${targetPathRaw}/`;
-    const isActive = currentPath === targetPath || currentPath.startsWith(targetPath);
+    const isActive = currentPath === targetPath;
     if (isActive) {
       link.classList.add('active');
     }
