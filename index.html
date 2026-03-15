@@ -5,13 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Point Numera Tools Hub: pricing, cash flow, and ROI calculators built for founders."
+      content="Free financial tools for founders by Point Numera — fractional CFO consultancy based in Amsterdam. Calculators for pricing, cash flow, dish profitability, and ROI."
     />
     <!-- Build v2: Framer-aligned pass -->
     <title>Point Numera Tools</title>
     <link rel="stylesheet" href="./tools/shared/base.css" />
     <link rel="stylesheet" href="./tools/shared/ui.css" />
     <style>
+      /* ── About strip ─────────────────────────────────────────────────── */
+      .about-strip {
+        background: var(--color-surface);
+        border-top: 1px solid var(--color-border);
+        border-bottom: 1px solid var(--color-border);
+        padding: var(--space-xl) 0;
+      }
+      .about-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-xxl);
+        align-items: center;
+      }
+      .about-inner h2 {
+        font-size: clamp(1.5rem, 2.5vw, 2rem);
+        margin-bottom: var(--space-sm);
+      }
+      .about-inner p {
+        margin-bottom: var(--space-sm);
+      }
+      .about-inner p:last-child {
+        margin-bottom: 0;
+      }
+      .about-meta {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+      }
+      .about-stat {
+        padding: var(--space-md);
+        background: var(--color-surface-2);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-lg);
+      }
+      .about-stat-value {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--color-primary);
+        font-family: 'Ancizar Sans', system-ui, sans-serif;
+        line-height: 1.2;
+        margin-bottom: 4px;
+      }
+      .about-stat-label {
+        font-size: 0.9rem;
+        color: var(--color-muted);
+      }
+
+      /* ── Tool cards ──────────────────────────────────────────────────── */
       .tool-card.coming-soon {
         opacity: 0.5;
         pointer-events: none;
@@ -41,11 +89,66 @@
         padding: 2px 10px;
         margin-bottom: var(--space-sm);
       }
-      .tool-card.coming-soon {
-        pointer-events: none;
-      }
       .tool-card.coming-soon a.btn {
         pointer-events: auto;
+      }
+
+      /* ── CTA section ─────────────────────────────────────────────────── */
+      .cta-section {
+        background: var(--color-primary);
+        padding: var(--space-xxl) 0;
+        margin-top: var(--space-xl);
+      }
+      .cta-section h2 {
+        color: #ffffff;
+        font-size: clamp(1.5rem, 2.5vw, 2rem);
+        margin-bottom: var(--space-sm);
+      }
+      .cta-section p {
+        color: rgba(255, 255, 255, 0.8);
+        max-width: 560px;
+        margin-bottom: var(--space-lg);
+      }
+      .cta-section .btn-contrast {
+        background: #F4ECBD;
+        color: var(--color-primary);
+        border-color: #F4ECBD;
+        font-weight: 700;
+      }
+      .cta-section .btn-contrast:hover {
+        background: #ede4ad;
+        border-color: #ede4ad;
+        color: var(--color-primary);
+        transform: translateY(-1px);
+      }
+      .cta-section .btn-outline-white {
+        background: transparent;
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.45);
+      }
+      .cta-section .btn-outline-white:hover {
+        border-color: rgba(255, 255, 255, 0.8);
+        color: #ffffff;
+        transform: translateY(-1px);
+      }
+      .cta-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+      }
+
+      @media (max-width: 768px) {
+        .about-inner {
+          grid-template-columns: 1fr;
+          gap: var(--space-lg);
+        }
+        .about-meta {
+          flex-direction: row;
+          flex-wrap: wrap;
+        }
+        .about-stat {
+          flex: 1 1 140px;
+        }
       }
     </style>
   </head>
@@ -57,18 +160,58 @@
         </a>
         <nav class="nav-links">
           <a class="nav-link active" href="./">Tools Hub</a>
+          <a class="nav-link" href="https://www.pointnumera.com" target="_blank" rel="noopener noreferrer">pointnumera.com ↗</a>
         </nav>
       </div>
     </header>
 
     <main>
+      <!-- Hero -->
       <section class="container hero">
         <h1>Point Numera Tools</h1>
         <p class="lead">
-          Founder-friendly calculators for pricing, cash flow, and ROI.
+          Free calculators built for founders and operators. Get a clear read on
+          your numbers — no spreadsheet, no signup, no fluff.
         </p>
       </section>
 
+      <!-- About PN -->
+      <div class="about-strip">
+        <div class="container">
+          <div class="about-inner">
+            <div>
+              <h2>Built by a fractional CFO, for founders who hate spreadsheets</h2>
+              <p>
+                Point Numera is a fractional CFO consultancy based in Amsterdam.
+                We work with founders and operators across Europe who need financial
+                clarity — without hiring a full-time CFO.
+              </p>
+              <p>
+                These tools are the quick-check layer: fast, opinionated, and free
+                to use. They won't replace a proper financial model, but they'll
+                tell you in two minutes whether your numbers are pointing in the
+                right direction.
+              </p>
+            </div>
+            <div class="about-meta">
+              <div class="about-stat">
+                <div class="about-stat-value">Fractional CFO</div>
+                <div class="about-stat-label">Senior finance expertise, without the full-time overhead</div>
+              </div>
+              <div class="about-stat">
+                <div class="about-stat-value">Amsterdam, NL</div>
+                <div class="about-stat-label">Working with founders across Europe</div>
+              </div>
+              <div class="about-stat">
+                <div class="about-stat-value">No data stored</div>
+                <div class="about-stat-label">All calculations run in your browser</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tools -->
       <section class="container section">
         <div class="card-grid">
 
@@ -102,13 +245,30 @@
           </article>
 
         </div>
-        <p class="note">No data is stored.</p>
+        <p class="note">No data is stored. All calculations run locally in your browser.</p>
       </section>
+
+      <!-- CTA -->
+      <div class="cta-section">
+        <div class="container">
+          <h2>Need more than a quick check?</h2>
+          <p>
+            If your pricing, cash flow, or margins need a proper look — not just
+            a calculator — that's what Point Numera is for. We work alongside
+            founders as a fractional CFO: strategy, models, and financial clarity
+            without the full-time hire.
+          </p>
+          <div class="cta-actions">
+            <a class="btn btn-contrast" href="https://www.pointnumera.com" target="_blank" rel="noopener noreferrer">Visit pointnumera.com</a>
+            <a class="btn btn-outline-white" href="https://cal.com/pointnumera" target="_blank" rel="noopener noreferrer">Book a free call</a>
+          </div>
+        </div>
+      </div>
     </main>
 
     <footer>
       <div class="container">
-        <span>&copy; Point Numera <span data-year></span></span>
+        <span>&copy; Point Numera <span data-year></span> &mdash; <a href="https://www.pointnumera.com" target="_blank" rel="noopener noreferrer">pointnumera.com</a></span>
         <span class="text-subtle">Built to stay lightweight and private.</span>
       </div>
     </footer>
