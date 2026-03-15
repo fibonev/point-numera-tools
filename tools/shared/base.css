@@ -131,3 +131,6 @@ ul {
 
 button { font-family: inherit; }
 table { border-collapse: collapse; }
+
+/* Prevent iOS auto-zoom on input focus (requires font-size >= 16px) */
+input, select, textarea { font-size: 16px; }
