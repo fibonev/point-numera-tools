@@ -8,7 +8,7 @@
   const currentPath = pathRaw.endsWith('/') ? pathRaw : `${pathRaw}/`;
 
   navLinks.forEach((link) => {
-    const targetPathRaw = new URL(link.getAttribute('href'), window.location.origin).pathname.replace(/\/+/g, '/');
+    const targetPathRaw = new URL(link.getAttribute('href'), window.location.href).pathname.replace(/\/+/g, '/');
     const targetPath = targetPathRaw.endsWith('/') ? targetPathRaw : `${targetPathRaw}/`;
     const isActive = currentPath === targetPath;
     if (isActive) {
