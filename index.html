@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Point Numera Tools Hub: pricing, cash flow, and ROI calculators built for founders."
+    />
+    <!-- Build v2: Framer-aligned pass -->
+    <title>Point Numera Tools</title>
+    <link rel="stylesheet" href="./tools/shared/base.css" />
+    <link rel="stylesheet" href="./tools/shared/ui.css" />
+    <style>
+      .tool-card.coming-soon {
+        opacity: 0.5;
+        pointer-events: none;
+        position: relative;
+      }
+      .tool-card.coming-soon .btn {
+        pointer-events: auto;
+        opacity: 1;
+        cursor: pointer;
+        background: transparent;
+        border-color: var(--color-border);
+        color: var(--color-muted);
+      }
+      .tool-card.coming-soon .btn:hover {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+      }
+      .coming-soon-badge {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--color-muted);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-pill);
+        padding: 2px 10px;
+        margin-bottom: var(--space-sm);
+      }
+      .tool-card.coming-soon {
+        pointer-events: none;
+      }
+      .tool-card.coming-soon a.btn {
+        pointer-events: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top-nav">
+      <div class="container">
+        <a class="brand" href="./">
+          <img src="./tools/shared/logo.svg" alt="Point Numera logo" />
+        </a>
+        <nav class="nav-links">
+          <a class="nav-link active" href="./">Tools Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="container hero">
+        <h1>Point Numera Tools</h1>
+        <p class="lead">
+          Founder-friendly calculators for pricing, cash flow, and ROI.
+        </p>
+      </section>
+
+      <section class="container section">
+        <div class="card-grid">
+
+          <!-- Live -->
+          <article class="card tool-card">
+            <h3>Dish Profitability Check</h3>
+            <p>Break down ingredient costs and see food cost % and gross margin per dish.</p>
+            <a class="btn btn-primary" href="./tools/dish-profitability-check/">Open tool</a>
+          </article>
+
+          <!-- Coming soon -->
+          <article class="card tool-card coming-soon">
+            <div class="coming-soon-badge">Coming soon</div>
+            <h3>Cash-Flow Check</h3>
+            <p>Quickly map runway, burn, and collection timing.</p>
+            <a class="btn" href="./tools/cash-flow-check/coming-soon.html">Get notified</a>
+          </article>
+
+          <article class="card tool-card coming-soon">
+            <div class="coming-soon-badge">Coming soon</div>
+            <h3>Pricing Calculator</h3>
+            <p>Calibrate packages, margins, and revenue goals with clarity.</p>
+            <a class="btn" href="./tools/pricing-calculator/coming-soon.html">Get notified</a>
+          </article>
+
+          <article class="card tool-card coming-soon">
+            <div class="coming-soon-badge">Coming soon</div>
+            <h3>ROI Quick Check</h3>
+            <p>Test ROI scenarios for product bets or marketing spend.</p>
+            <a class="btn" href="./tools/roi-quick-check/coming-soon.html">Get notified</a>
+          </article>
+
+        </div>
+        <p class="note">No data is stored.</p>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <span>&copy; Point Numera <span data-year></span></span>
+        <span class="text-subtle">Built to stay lightweight and private.</span>
+      </div>
+    </footer>
+
+    <script src="./tools/shared/app.js"></script>
+  </body>
+</html>
