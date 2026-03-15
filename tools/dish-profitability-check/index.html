@@ -372,6 +372,9 @@
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: var(--space-md);
       }
+      #dish-cta-simple {
+        display: block;
+      }
       #dish-capture {
         display: none;
       }
@@ -736,7 +739,21 @@
           </div>
       </section>
 
-      <!-- ── CTA ─────────────────────────────────────────────────────────── -->
+      <!-- ── CTA V1 (pre-result) ──────────────────────────────────────────── -->
+      <section id="dish-cta-simple" class="container section-compact">
+        <div class="card">
+          <h3>Want a free dish cost breakdown template?</h3>
+          <p class="lead">
+            A spreadsheet to map ingredient costs, food cost %, and margin for any dish — with benchmarks built in.
+          </p>
+          <div class="flex gap-sm" style="flex-wrap: wrap">
+            <a class="btn btn-primary" href="#dish-capture" id="dishCtaTemplateBtn">Get the free template</a>
+            <a class="btn btn-secondary" href="https://cal.com/pointnumera" target="_blank" rel="noopener noreferrer">Book a free 20-min dish review call</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── CTA V2 (post-result) ──────────────────────────────────────────── -->
       <section id="dish-capture" class="container section-compact">
         <div class="cta-grid">
           <!-- Card 1: Email capture -->
@@ -976,6 +993,7 @@
       const resultCostDriverEl= document.getElementById('resultCostDriver');
       const seasonalityNudgeEl= document.getElementById('seasonalityNudge');
       const dishCaptureEl     = document.getElementById('dish-capture');
+      const dishCtaSimpleEl   = document.getElementById('dish-cta-simple');
       const scrollCueEl       = document.getElementById('scrollCue');
       const scrollCueTextEl   = document.getElementById('scrollCueText');
       const rootStyle         = document.documentElement.style;
@@ -1144,6 +1162,18 @@
 
       addIngBtn.addEventListener('click', addIngredientRow);
 
+      // V1 template button: reveal V2 and scroll to it
+      const dishCtaTemplateBtn = document.getElementById('dishCtaTemplateBtn');
+      dishCtaTemplateBtn && dishCtaTemplateBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (dishCtaSimpleEl) dishCtaSimpleEl.style.display = 'none';
+        if (dishCaptureEl) {
+          dishCaptureEl.style.display = 'block';
+          const top = dishCaptureEl.getBoundingClientRect().top + window.scrollY - 70;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      });
+
       // ── Scroll cue ───────────────────────────────────────────────────────
       function showScrollCue(text) {
         if (!scrollCueEl) return;
@@ -1170,7 +1200,6 @@
           scrollCueTextEl.textContent = '↓ Get the dish template';
         } else {
           if (dishCaptureEl) {
-            dishCaptureEl.style.display = 'block';
             const top =
               dishCaptureEl.getBoundingClientRect().top + window.scrollY - 70;
             window.scrollTo({ top, behavior: 'smooth' });
@@ -1327,11 +1356,12 @@
 
         seasonalityNudgeEl.style.display = 'block';
 
-        // ── Show results ─────────────────────────────────────────────────
+        // ── Show results, swap CTA V1 → V2 ──────────────────────────────
         resultsEl.style.display = 'block';
         resultsContent.classList.add('visible');
+        if (dishCtaSimpleEl) dishCtaSimpleEl.style.display = 'none';
+        if (dishCaptureEl)   dishCaptureEl.style.display   = 'block';
 
-        if (dishCaptureEl) dishCaptureEl.style.display = 'block';
         showScrollCue('↓ Results & dish template below');
       });
     </script>
