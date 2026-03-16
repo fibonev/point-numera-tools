@@ -367,14 +367,6 @@
       }
 
       /* ── CTA ──────────────────────────────────────────────────────────── */
-      .cta-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: var(--space-md);
-      }
-      #dish-cta-simple {
-        display: block;
-      }
       #dish-capture {
         display: none;
       }
@@ -426,10 +418,18 @@
       .section-compact {
         padding: var(--space-md) 0;
       }
-      .intro-list {
-        list-style: disc;
-        padding-left: 1.2rem;
+      .subtitle {
+        font-size: 1.05rem;
         color: var(--color-muted);
+        max-width: 640px;
+      }
+      .results-teaser {
+        max-width: 640px;
+      }
+      .friction-line {
+        font-size: 0.9rem;
+        color: var(--color-muted);
+        margin-bottom: var(--space-lg);
       }
       .results-cue {
         display: none;
@@ -523,9 +523,6 @@
           border-bottom: none;
           padding-bottom: 0;
         }
-        .cta-grid {
-          grid-template-columns: 1fr;
-        }
       }
       @media (max-width: 480px) {
         .card {
@@ -553,18 +550,10 @@
 
     <main class="page-wrap">
       <section class="container hero">
-        <h1>Dish Profitability Checker</h1>
-        <p class="lead">
-          Enter one dish. See exactly what it costs you — and what it's
-          actually worth.
-        </p>
-        <ul class="intro-list">
-          <li>Break down ingredient costs by weight, volume, or unit</li>
-          <li>
-            Outputs: food cost %, gross margin, and your biggest cost driver
-          </li>
-          <li>No signup required — results are instant</li>
-        </ul>
+        <h1>Which dish on your menu is quietly costing you money?</h1>
+        <p class="subtitle">For restaurant owners who want to know their real margin — before the next price increase forces the question.</p>
+        <p class="results-teaser">Most operators find at least one dish running <span style="color: #F4ECBD">10+</span> points above their food cost target. This tool shows you which one.</p>
+        <p class="friction-line">No signup. Enter your dish details below — results are instant.</p>
       </section>
 
       <section class="container section section-compact">
@@ -755,100 +744,22 @@
         </div>
       </section>
 
-      <!-- ── CTA V2 (post-result) ──────────────────────────────────────────── -->
+      <!-- ── CTA (post-result) ─────────────────────────────────────────────── -->
       <section id="dish-capture" class="container section-compact">
-        <div class="cta-grid">
-          <!-- Card 1: Email capture -->
-          <div class="card capture-card">
-            <div class="capture-content">
-              <h3>Get a free dish cost breakdown template</h3>
-              <p>
-                A spreadsheet to map out ingredient costs, food cost %, and
-                margin for any dish — with benchmarks built in.
-              </p>
-            </div>
-            <form
-              id="dishCaptureForm"
-              class="capture-form"
-              data-capture
-              action="https://assets.mailerlite.com/jsonp/PLACEHOLDER/forms/PLACEHOLDER/subscribe"
-              method="post"
+        <div id="cta-card" class="card" style="max-width: 560px; margin: 0 auto;">
+          <h3>Want to know if your full menu is working for you?</h3>
+          <p>
+            Book a free 20-minute call. We'll look at your numbers and tell you
+            where you're losing margin.
+          </p>
+          <div class="form-actions" style="margin-top: var(--space-sm)">
+            <a
+              class="btn btn-primary"
+              href="https://cal.com/pointnumera"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Book a free call →</a
             >
-              <input type="hidden" name="ml-submit" value="1" />
-              <input type="hidden" name="anticsrf" value="true" />
-              <input
-                type="hidden"
-                name="fields[source_tool]"
-                value="dish_profitability_check"
-              />
-              <div class="row-form">
-                <div class="capture-fields">
-                  <div class="form-row capture-hide-on-success">
-                    <label for="dishCaptureName">Name (optional)</label>
-                    <input
-                      id="dishCaptureName"
-                      type="text"
-                      name="fields[name]"
-                      placeholder="Your name"
-                    />
-                  </div>
-                  <div class="form-row capture-hide-on-success">
-                    <label for="dishCaptureEmail">Email</label>
-                    <input
-                      id="dishCaptureEmail"
-                      type="email"
-                      name="fields[email]"
-                      placeholder="you@example.com"
-                      required
-                    />
-                  </div>
-                  <div class="form-row checkbox-row capture-hide-on-success">
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="fields[consent_checkbox]"
-                        value="yes"
-                        required
-                      />
-                      <span
-                        >I agree to receive the template and occasional
-                        updates.</span
-                      >
-                    </label>
-                  </div>
-                  <div class="form-actions">
-                    <button
-                      type="submit"
-                      class="btn btn-primary capture-hide-on-success"
-                    >
-                      Send it to me
-                    </button>
-                  </div>
-                </div>
-                <div class="form-msg" aria-live="polite"></div>
-              </div>
-              <div class="row-success" style="display: none">
-                <div class="form-msg" aria-live="polite"></div>
-              </div>
-            </form>
-          </div>
-
-          <!-- Card 2: Booking -->
-          <div class="card">
-            <h3>Book a free 20-min dish review call</h3>
-            <p>
-              Walk through your numbers with a fractional CFO. We'll look at
-              which dishes are dragging your margins and what to do about it.
-            </p>
-            <div class="form-actions" style="margin-top: var(--space-sm)">
-              <a
-                class="btn btn-primary"
-                href="https://cal.com/pointnumera"
-                target="_blank"
-                rel="noopener noreferrer"
-                >Book a free 20-min call →</a
-              >
-            </div>
           </div>
         </div>
       </section>
@@ -910,7 +821,7 @@
 
     <div id="scrollCue" class="pn-scroll-cue">
       <span id="scrollCueText" class="pn-scroll-cue-text"
-        >↓ Results &amp; dish template below</span
+        >↓ Results below</span
       >
       <span class="pn-scroll-cue-action">Jump</span>
     </div>
@@ -994,7 +905,6 @@
       const resultMarginPctEl = document.getElementById('resultMarginPct');
       const resultCostDriverEl= document.getElementById('resultCostDriver');
       const seasonalityNudgeEl= document.getElementById('seasonalityNudge');
-      const dishCaptureEl     = document.getElementById('dish-capture');
       const dishCtaSimpleEl   = document.getElementById('dish-cta-simple');
       const scrollCueEl       = document.getElementById('scrollCue');
       const scrollCueTextEl   = document.getElementById('scrollCueText');
@@ -1164,18 +1074,6 @@
 
       addIngBtn.addEventListener('click', addIngredientRow);
 
-      // V1 template button: reveal V2 and scroll to it
-      const dishCtaTemplateBtn = document.getElementById('dishCtaTemplateBtn');
-      dishCtaTemplateBtn && dishCtaTemplateBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (dishCtaSimpleEl) dishCtaSimpleEl.style.display = 'none';
-        if (dishCaptureEl) {
-          dishCaptureEl.style.display = 'block';
-          const top = dishCaptureEl.getBoundingClientRect().top + window.scrollY - 70;
-          window.scrollTo({ top, behavior: 'smooth' });
-        }
-      });
-
       // ── Scroll cue ───────────────────────────────────────────────────────
       function showScrollCue(text) {
         if (!scrollCueEl) return;
@@ -1199,11 +1097,12 @@
           resultsEl &&
             resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
           scrollCueStep = 1;
-          scrollCueTextEl.textContent = '↓ Get the dish template';
+          scrollCueTextEl.textContent = '↓ Book a free call';
         } else {
-          if (dishCaptureEl) {
+          const ctaCardEl = document.getElementById('cta-card');
+          if (ctaCardEl) {
             const top =
-              dishCaptureEl.getBoundingClientRect().top + window.scrollY - 70;
+              ctaCardEl.getBoundingClientRect().top + window.scrollY - 70;
             window.scrollTo({ top, behavior: 'smooth' });
           }
           hideScrollCue();
@@ -1362,9 +1261,9 @@
         resultsEl.style.display = 'block';
         resultsContent.classList.add('visible');
         if (dishCtaSimpleEl) dishCtaSimpleEl.style.display = 'none';
-        if (dishCaptureEl)   dishCaptureEl.style.display   = 'block';
+        document.getElementById('dish-capture').style.display = 'block';
 
-        showScrollCue('↓ Results & dish template below');
+        showScrollCue('↓ Results below');
       });
     </script>
   </body>
