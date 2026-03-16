@@ -728,6 +728,10 @@
               style="display: none"
             ></div>
 
+            <button type="button" id="exportBtn" class="btn btn-ghost">
+              ↓ Export results (.csv)
+            </button>
+
             <div id="seasonalityNudge" class="seasonality-nudge">
               Ingredient costs shift with the seasons. If the price of a key
               ingredient rises, re-run this check to see the impact on your
@@ -1314,6 +1318,34 @@
         document.getElementById("dish-capture").style.display = "block";
 
         showScrollCue("↓ Results below");
+      });
+
+      // ── CSV export ───────────────────────────────────────────────────────
+      document.getElementById("exportBtn").addEventListener("click", () => {
+        const stripTags = (s) => String(s).replace(/<[^>]*>/g, "").trim();
+        const q = (s) => `"${stripTags(s).replace(/"/g, '""')}"`;
+
+        const rows = [
+          ["Metric", "Value"],
+          ["Dish name",                        document.getElementById("resultDishName").textContent],
+          ["Target food cost %",               document.getElementById("targetFoodCost").value + "%"],
+          ["Total ingredient cost per portion", document.getElementById("resultTotalCost").textContent],
+          ["Food cost %",                      document.getElementById("resultFoodCostPct").textContent],
+          ["Food cost vs target",              document.getElementById("resultFoodCostCtx").textContent],
+          ["Gross margin per portion (€)",     document.getElementById("resultMarginEur").textContent],
+          ["Gross margin %",                   document.getElementById("resultMarginPct").textContent],
+          ["Biggest cost driver",              document.getElementById("resultCostDriver").textContent],
+          ["Status",                           document.getElementById("statusBadge").textContent],
+        ];
+
+        const csv = rows.map(([m, v]) => `${q(m)},${q(v)}`).join("\r\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "dish-profitability-check.csv";
+        a.click();
+        URL.revokeObjectURL(url);
       });
     </script>
   </body>
