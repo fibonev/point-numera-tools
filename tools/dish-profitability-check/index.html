@@ -41,32 +41,7 @@
         display: none;
       }
 
-      /* ── Dish detail row (price + VAT) ────────────────────────────────── */
-      .dish-detail-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-md);
-      }
-
-      /* ── Input prefix / suffix wrappers ───────────────────────────────── */
-      .input-prefix-wrap {
-        position: relative;
-        display: flex;
-        align-items: center;
-      }
-      .input-prefix-wrap input {
-        width: 100%;
-        padding-left: 24px;
-      }
-      .input-prefix {
-        position: absolute;
-        left: 9px;
-        font-weight: 600;
-        color: var(--color-muted);
-        pointer-events: none;
-        font-size: 0.9rem;
-        z-index: 1;
-      }
+      /* ── Input suffix wrappers ────────────────────────────────────────── */
       .input-suffix-wrap {
         position: relative;
         display: flex;
@@ -83,6 +58,34 @@
         color: var(--color-muted);
         pointer-events: none;
         font-size: 0.9rem;
+      }
+
+      /* ── Price + VAT row ─────────────────────────────────────────────── */
+      .price-vat-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: var(--space-md);
+        align-items: start;
+      }
+      .vat-field {
+        min-width: 180px;
+      }
+      .vat-inline {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+      .vat-inline input[type="number"] {
+        width: 70px;
+      }
+      .vat-toggle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.9rem;
+        color: var(--color-muted);
+        white-space: nowrap;
+        cursor: pointer;
       }
 
       /* ── Select ───────────────────────────────────────────────────────── */
@@ -218,11 +221,6 @@
       }
 
       /* ── Results card ─────────────────────────────────────────────────── */
-      .results-placeholder {
-        color: var(--color-muted);
-        font-size: 0.95rem;
-        padding: var(--space-md) 0;
-      }
       .results-content {
         display: none;
       }
@@ -278,6 +276,11 @@
         font-weight: 700;
         color: #2a1f00;
         line-height: 1.1;
+      }
+      .rch-excl-vat {
+        font-size: 0.85rem;
+        color: var(--color-muted);
+        margin-top: 4px;
       }
 
       /* Metrics grid */
@@ -377,10 +380,10 @@
 
       /* ── Ingredient field wrappers (per-field labels on mobile) ────────── */
       .ing-field-wrap {
-        display: contents; /* desktop: children participate in parent grid */
+        display: contents;
       }
       .ing-field-label {
-        display: none; /* hidden on desktop, shown on mobile */
+        display: none;
         font-size: 0.75rem;
         font-weight: 600;
         color: var(--color-muted);
@@ -396,17 +399,7 @@
       }
       .cost-input-wrap input {
         width: 100%;
-        padding-left: 24px;
         padding-right: 40px;
-      }
-      .cost-input-wrap .cost-prefix {
-        position: absolute;
-        left: 9px;
-        font-weight: 600;
-        color: var(--color-muted);
-        pointer-events: none;
-        font-size: 0.9rem;
-        z-index: 1;
       }
       .cost-input-wrap .cost-unit-label {
         position: absolute;
@@ -416,6 +409,37 @@
         color: var(--color-muted);
         pointer-events: none;
         white-space: nowrap;
+      }
+
+      /* ── Breakdown chart ──────────────────────────────────────────────── */
+      #chartWrap {
+        margin-bottom: var(--space-md);
+      }
+      #chartLegend {
+        max-width: 260px;
+        margin: var(--space-sm) auto 0;
+      }
+
+      /* ── Outlined CTA button ──────────────────────────────────────────── */
+      .btn-outline-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: 1px solid var(--color-primary);
+        color: var(--color-primary);
+        border-radius: var(--r-pill);
+        padding: 10px 20px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.15s ease;
+        white-space: nowrap;
+      }
+      .btn-outline-primary:hover {
+        background: rgba(14, 79, 71, 0.06);
       }
 
       /* ── Misc ─────────────────────────────────────────────────────────── */
@@ -464,8 +488,11 @@
         }
       }
       @media (max-width: 600px) {
-        .dish-detail-row {
+        .price-vat-row {
           grid-template-columns: 1fr;
+        }
+        .vat-field {
+          min-width: unset;
         }
         .ing-col-headers {
           display: none;
@@ -476,34 +503,29 @@
           gap: 8px;
           align-items: start;
         }
-        /* name full-width on row 1 */
         .ingredient-row .ing-name-wrap {
           grid-column: 1 / -1;
           grid-row: 1;
           display: flex;
           flex-direction: column;
         }
-        /* qty wrapper on row 2, col 1 */
         .ingredient-row .ing-field-wrap:nth-child(2) {
           grid-column: 1;
           grid-row: 2;
           display: flex;
           flex-direction: column;
         }
-        /* unit wrapper on row 2, col 2 */
         .ingredient-row .ing-field-wrap:nth-child(3) {
           grid-column: 2;
           grid-row: 2;
           display: flex;
           flex-direction: column;
         }
-        /* remove button on row 2, col 3 */
         .ingredient-row .ing-remove {
           grid-column: 3;
           grid-row: 2;
           align-self: end;
         }
-        /* cost wrapper full-width on row 3 */
         .ingredient-row .ing-field-wrap.cost-cell {
           grid-column: 1 / -1;
           grid-row: 3;
@@ -511,10 +533,10 @@
           flex-direction: column;
         }
         .ingredient-row .ing-field-wrap.cost-cell .cost-input-wrap input {
-          padding-right: 12px; /* enough room without suffix on mobile */
+          padding-right: 12px;
         }
         .cost-unit-label {
-          display: none; /* hide the absolute suffix on mobile — label does the job */
+          display: none;
         }
         .ing-field-label {
           display: block;
@@ -531,6 +553,92 @@
       @media (max-width: 480px) {
         .card {
           padding: var(--space-md);
+        }
+      }
+    </style>
+
+    <style media="print">
+      @media print {
+        header,
+        .hero,
+        #dish-form,
+        #dish-capture,
+        #scrollCue,
+        .faq-list,
+        h2,
+        .seasonality-nudge,
+        #exportBtn,
+        #exportCsvBtn,
+        .export-buttons,
+        .disclaimer,
+        .section-compact:not(:has(#results)) {
+          display: none !important;
+        }
+
+        body {
+          background: #fff !important;
+          color: #000 !important;
+          font-size: 11px !important;
+        }
+
+        #results {
+          display: block !important;
+          box-shadow: none;
+          border: 1px solid #ddd;
+          padding: 14px !important;
+          border-radius: 8px;
+        }
+
+        .result-cost-highlight {
+          background: #f4ecbd !important;
+          padding: 10px 14px !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        .result-cost-highlight .rch-value {
+          font-size: 1.6rem !important;
+        }
+
+        .result-grid {
+          display: grid !important;
+          grid-template-columns: repeat(3, 1fr) !important;
+          gap: 8px !important;
+        }
+
+        .result-item {
+          padding: 8px 10px !important;
+          border: 1px solid #ccc !important;
+          background: #f9f9f9 !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        #breakdownChart {
+          width: 160px !important;
+          height: 160px !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        #chartLegend {
+          font-size: 10px !important;
+          gap: 4px 8px !important;
+        }
+
+        #results::after {
+          content: "Generated by Point Numera — pointnumera.com";
+          display: block;
+          margin-top: 12px;
+          font-size: 9px;
+          color: #aaa;
+          border-top: 1px solid #eee;
+          padding-top: 8px;
+        }
+
+        @page {
+          size: A4 portrait;
+          margin: 12mm 14mm;
         }
       }
     </style>
@@ -587,38 +695,60 @@
               />
             </div>
 
+            <!-- Currency symbol -->
+            <div class="input-group">
+              <label for="currencySymbol">Currency symbol (optional)</label>
+              <input
+                id="currencySymbol"
+                name="currencySymbol"
+                type="text"
+                maxlength="4"
+                placeholder="e.g. € £ $ kr"
+              />
+              <div class="helper-text">
+                Used to label your results. Leave blank if not needed.
+              </div>
+            </div>
+
             <!-- Selling price + VAT -->
-            <div class="dish-detail-row">
-              <div class="input-group" style="margin-bottom: 0">
-                <label for="sellingPrice"
-                  >Selling price excl. VAT (&euro;)</label
-                >
-                <div class="input-prefix-wrap">
-                  <span class="input-prefix" aria-hidden="true">€</span>
-                  <input
-                    id="sellingPrice"
-                    name="sellingPrice"
-                    type="number"
-                    min="0.01"
-                    step="0.01"
-                    placeholder="12.50"
-                    required
-                  />
-                </div>
+            <div class="price-vat-row">
+              <div class="price-field input-group" style="margin-bottom: 0">
+                <label for="sellingPrice">Selling price (incl. VAT)</label>
+                <input
+                  id="sellingPrice"
+                  name="sellingPrice"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="12.50"
+                  required
+                />
                 <div class="helper-text">
-                  Enter the price you charge, excluding VAT.
+                  Enter the price shown on your menu.
                 </div>
               </div>
-              <div class="input-group" style="margin-bottom: 0">
+              <div class="vat-field input-group" style="margin-bottom: 0">
                 <label for="vatRate">VAT rate</label>
-                <select id="vatRate" name="vatRate">
-                  <option value="9">9% (standard food in NL)</option>
-                  <option value="21">21%</option>
-                  <option value="0">0%</option>
-                </select>
-                <div class="helper-text">
-                  For reference: calculations use excl. VAT price.
+                <div class="vat-inline">
+                  <div class="input-suffix-wrap" style="flex: none">
+                    <input
+                      id="vatRate"
+                      name="vatRate"
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      value="9"
+                      aria-label="VAT rate %"
+                    />
+                    <span class="input-suffix">%</span>
+                  </div>
+                  <label class="vat-toggle">
+                    <input type="checkbox" id="noVat" />
+                    No VAT
+                  </label>
                 </div>
+                <div class="helper-text">Check if VAT doesn't apply.</div>
               </div>
             </div>
 
@@ -704,6 +834,7 @@
               >
                 —
               </div>
+              <div id="resultExclVat" class="rch-excl-vat"></div>
             </div>
 
             <div class="result-grid">
@@ -728,9 +859,65 @@
               style="display: none"
             ></div>
 
-            <button type="button" id="exportBtn" class="btn btn-ghost">
-              ↓ Export results (.csv)
-            </button>
+            <div id="chartWrap" style="display: none">
+              <svg
+                id="breakdownChart"
+                viewBox="0 0 260 260"
+                style="
+                  display: block;
+                  margin: 0 auto;
+                  width: 100%;
+                  max-width: 260px;
+                "
+                aria-hidden="true"
+              >
+                <circle
+                  cx="130"
+                  cy="130"
+                  r="80"
+                  fill="none"
+                  stroke="#1e2e2b"
+                  stroke-width="44"
+                />
+                <g id="chartSegments"></g>
+                <text
+                  x="130"
+                  y="126"
+                  text-anchor="middle"
+                  font-size="22"
+                  font-weight="700"
+                  fill="#0a0f0e"
+                  font-family="'Ancizar Sans', system-ui, sans-serif"
+                  id="chartMarginPct"
+                >
+                  0%
+                </text>
+                <text
+                  x="130"
+                  y="143"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#8a9e9a"
+                  font-family="inherit"
+                  letter-spacing="0.08em"
+                >
+                  MARGIN
+                </text>
+              </svg>
+              <div id="chartLegend"></div>
+            </div>
+
+            <div
+              class="export-buttons"
+              style="display: flex; gap: 8px; flex-wrap: wrap"
+            >
+              <button type="button" id="exportBtn" class="btn btn-ghost">
+                Save as PDF
+              </button>
+              <button type="button" id="exportCsvBtn" class="btn btn-ghost">
+                Export .csv
+              </button>
+            </div>
 
             <div id="seasonalityNudge" class="seasonality-nudge">
               Ingredient costs shift with the seasons. If the price of a key
@@ -739,7 +926,7 @@
             </div>
 
             <p class="disclaimer">
-              Selling price is entered excl. VAT. Food cost % = total ingredient
+              Selling price is entered incl. VAT. Food cost % = total ingredient
               cost ÷ selling price excl. VAT. Labour, waste, and overhead are
               not included. They apply at the business level.
             </p>
@@ -750,15 +937,16 @@
       <!-- ── CTA (post-result) ─────────────────────────────────────────────── -->
       <section id="dish-capture" class="container section-compact">
         <div
-          id="cta-card"
-          class="card"
+          class="card section-divider capture-card"
           style="max-width: 560px; margin: 0 auto"
         >
-          <h3>Want to know if your full menu looks like this?</h3>
-          <p>
-            Get a ready-to-use spreadsheet for all your dishes — or book a free
-            20-minute call and we'll walk through it with you.
-          </p>
+          <div class="capture-content">
+            <h3>Get the dish cost spreadsheet</h3>
+            <p>
+              A ready-to-use template to track food cost and margin across your
+              full menu.
+            </p>
+          </div>
           <form
             id="dishCaptureForm"
             class="capture-form"
@@ -773,31 +961,71 @@
               name="fields[source_tool]"
               value="dish_profitability_check"
             />
-            <div class="form-row" style="margin-top: var(--space-sm)">
-              <label for="dishCaptureEmail">Email</label>
-              <input
-                id="dishCaptureEmail"
-                type="email"
-                name="fields[email]"
-                placeholder="you@example.com"
-                required
-              />
+            <div class="row-form">
+              <div class="capture-fields">
+                <div class="form-row capture-hide-on-success">
+                  <label for="dishCaptureName">Name (optional)</label>
+                  <input
+                    id="dishCaptureName"
+                    type="text"
+                    name="fields[name]"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div class="form-row capture-hide-on-success">
+                  <label for="dishCaptureEmail">Email</label>
+                  <input
+                    id="dishCaptureEmail"
+                    type="email"
+                    name="fields[email]"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+                <div class="form-row checkbox-row capture-hide-on-success">
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="fields[consent_checkbox]"
+                      value="yes"
+                      required
+                    />
+                    <span>
+                      I agree to receive the template and occasional updates.
+                    </span>
+                  </label>
+                </div>
+                <div class="form-actions">
+                  <button
+                    type="submit"
+                    class="btn btn-primary capture-hide-on-success"
+                  >
+                    Send it to me
+                  </button>
+                  <a
+                    class="btn-outline-primary"
+                    href="https://cal.com/pointnumera"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Book a free menu review call</a
+                  >
+                </div>
+              </div>
+              <div class="form-msg" aria-live="polite"></div>
             </div>
-            <div class="form-actions" style="margin-top: var(--space-sm)">
-              <button type="submit" class="btn btn-primary">
-                Send me the template
-              </button>
+            <div class="row-success" style="display: none">
+              <div class="form-msg" aria-live="polite"></div>
+              <div class="form-actions">
+                <a
+                  class="btn-outline-primary"
+                  href="https://cal.com/pointnumera"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Book a free menu review call</a
+                >
+              </div>
             </div>
           </form>
-          <p style="margin-top: var(--space-sm); font-size: 0.9rem; color: var(--color-muted)">
-            <a
-              href="https://cal.com/pointnumera"
-              target="_blank"
-              rel="noopener noreferrer"
-              style="color: var(--color-muted)"
-              >Prefer to talk? Book a free 20-min call →</a
-            >
-          </p>
         </div>
       </section>
 
@@ -850,6 +1078,21 @@
             <p>
               No. All calculations run in your browser. Nothing is saved or
               transmitted unless you choose to submit your email.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong
+              >Does this tell me if my dish is actually profitable?</strong
+            >
+            <p>
+              It shows whether your ingredient cost is healthy relative to your
+              selling price. Keep in mind, true profitability includes fixed
+              costs too. Rent, labour, energy, and equipment don't change with
+              each portion served. Once your margins cover those overhead costs
+              across enough covers, the dish becomes genuinely profitable. A
+              healthy food cost % is a necessary starting point, not the full
+              picture. If you want to understand your break-even point or full
+              cost structure, that's where a CFO conversation helps.
             </p>
           </div>
         </div>
@@ -924,23 +1167,36 @@
       const MIN_INGREDIENTS = 1;
       let ingCount = 0;
 
+      const CHART_CIRCUMFERENCE = 2 * Math.PI * 80; // 502.65
+      const ING_COLORS = [
+        "#e07b4f",
+        "#e0c44f",
+        "#b05c8a",
+        "#4f8ae0",
+        "#7bbf72",
+      ];
+      const MARGIN_COLOR = "#4ecb71";
+
       // ── Element refs ─────────────────────────────────────────────────────
       const ingRowsEl = document.getElementById("ingredientRows");
       const addIngBtn = document.getElementById("addIngredientBtn");
       const formErrorEl = document.getElementById("formError");
       const resultsEl = document.getElementById("results");
-      const resultsAnchor = document.getElementById("results-anchor");
       const resultsContent = document.getElementById("resultsContent");
       const resultDishNameEl = document.getElementById("resultDishName");
       const statusBadgeEl = document.getElementById("statusBadge");
       const resultTotalCostEl = document.getElementById("resultTotalCost");
+      const resultExclVatEl = document.getElementById("resultExclVat");
       const resultFoodCostPctEl = document.getElementById("resultFoodCostPct");
       const resultFoodCostCtxEl = document.getElementById("resultFoodCostCtx");
       const resultMarginEurEl = document.getElementById("resultMarginEur");
       const resultMarginPctEl = document.getElementById("resultMarginPct");
       const resultCostDriverEl = document.getElementById("resultCostDriver");
       const seasonalityNudgeEl = document.getElementById("seasonalityNudge");
-      const dishCtaSimpleEl = document.getElementById("dish-cta-simple");
+      const chartWrapEl = document.getElementById("chartWrap");
+      const chartSegmentsEl = document.getElementById("chartSegments");
+      const chartMarginPctEl = document.getElementById("chartMarginPct");
+      const chartLegendEl = document.getElementById("chartLegend");
       const scrollCueEl = document.getElementById("scrollCue");
       const scrollCueTextEl = document.getElementById("scrollCueText");
       const rootStyle = document.documentElement.style;
@@ -948,10 +1204,8 @@
       let scrollCueStep = 0;
 
       // ── Formatting helpers ───────────────────────────────────────────────
-      const fmtCurrency = (v) =>
+      const fmtNum = (v) =>
         new Intl.NumberFormat("en-IE", {
-          style: "currency",
-          currency: "EUR",
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         }).format(v);
@@ -1008,13 +1262,17 @@
         }[status];
       }
 
+      // ── VAT inputs ───────────────────────────────────────────────────────
+      document.getElementById("noVat").addEventListener("change", function () {
+        document.getElementById("vatRate").disabled = this.checked;
+      });
+
       // ── Ingredient row management ────────────────────────────────────────
       function updateUnitLabel(row) {
         const unit = row.querySelector(".ing-unit").value;
         const unitDef = UNITS[unit] || UNITS.g;
         row.querySelector(".cost-unit-label").textContent = unitDef.suffix;
-        const costInput = row.querySelector(".ing-cost");
-        costInput.setAttribute("aria-label", `${unitDef.aria} (€)`);
+        row.querySelector(".ing-cost").setAttribute("aria-label", unitDef.aria);
       }
 
       function createIngredientRow(idx) {
@@ -1059,7 +1317,6 @@
           <div class="ing-field-wrap cost-cell">
             <span class="ing-field-label" aria-hidden="true">Cost per unit</span>
             <div class="cost-input-wrap">
-              <span class="cost-prefix" aria-hidden="true">€</span>
               <input
                 class="ing-cost"
                 type="number"
@@ -1067,7 +1324,7 @@
                 min="0"
                 step="any"
                 placeholder="8.50"
-                aria-label="Cost per kg (€)"
+                aria-label="Cost per kg"
               />
               <span class="cost-unit-label" aria-hidden="true">/ kg</span>
             </div>
@@ -1090,8 +1347,11 @@
       }
 
       function removeIngredientRow(row) {
-        const rows = ingRowsEl.querySelectorAll(".ingredient-row");
-        if (rows.length <= MIN_INGREDIENTS) return;
+        if (
+          ingRowsEl.querySelectorAll(".ingredient-row").length <=
+          MIN_INGREDIENTS
+        )
+          return;
         row.remove();
         updateIngControls();
       }
@@ -1128,6 +1388,96 @@
 
       addIngBtn.addEventListener("click", addIngredientRow);
 
+      // ── Chart ─────────────────────────────────────────────────────────────
+      function buildChart(
+        ingredients,
+        priceExclVat,
+        marginPct,
+        marginEur,
+        sym,
+      ) {
+        chartSegmentsEl.innerHTML = "";
+        const svgNS = "http://www.w3.org/2000/svg";
+        let offset = 0;
+
+        ingredients.forEach((ing, i) => {
+          const arc = (ing.costPerPortion / priceExclVat) * CHART_CIRCUMFERENCE;
+          const color = ING_COLORS[i % ING_COLORS.length];
+          const circle = document.createElementNS(svgNS, "circle");
+          circle.setAttribute("cx", "130");
+          circle.setAttribute("cy", "130");
+          circle.setAttribute("r", "80");
+          circle.setAttribute("fill", "none");
+          circle.setAttribute("stroke", color);
+          circle.setAttribute("stroke-width", "44");
+          circle.setAttribute("stroke-linecap", "butt");
+          circle.setAttribute("transform", "rotate(-90 130 130)");
+          circle.setAttribute(
+            "stroke-dasharray",
+            `${arc} ${CHART_CIRCUMFERENCE - arc}`,
+          );
+          circle.setAttribute("stroke-dashoffset", String(-offset));
+          chartSegmentsEl.appendChild(circle);
+          offset += arc;
+        });
+
+        const marginArc = (marginPct / 100) * CHART_CIRCUMFERENCE;
+        if (marginArc > 0) {
+          const mc = document.createElementNS(svgNS, "circle");
+          mc.setAttribute("cx", "130");
+          mc.setAttribute("cy", "130");
+          mc.setAttribute("r", "80");
+          mc.setAttribute("fill", "none");
+          mc.setAttribute("stroke", MARGIN_COLOR);
+          mc.setAttribute("stroke-width", "44");
+          mc.setAttribute("stroke-linecap", "butt");
+          mc.setAttribute("transform", "rotate(-90 130 130)");
+          mc.setAttribute(
+            "stroke-dasharray",
+            `${marginArc} ${CHART_CIRCUMFERENCE - marginArc}`,
+          );
+          mc.setAttribute("stroke-dashoffset", String(-offset));
+          chartSegmentsEl.appendChild(mc);
+        }
+
+        chartMarginPctEl.textContent = fmtPct(marginPct);
+
+        // Legend — 4-column grid: dot | name | cost | %
+        chartLegendEl.innerHTML = "";
+        const items = [
+          ...ingredients.map((ing, i) => ({
+            name: ing.name,
+            color: ING_COLORS[i % ING_COLORS.length],
+            pct: (ing.costPerPortion / priceExclVat) * 100,
+            cost: ing.costPerPortion,
+          })),
+          {
+            name: "Gross margin",
+            color: MARGIN_COLOR,
+            pct: marginPct,
+            cost: marginEur,
+          },
+        ];
+
+        items.forEach((item) => {
+          const label =
+            item.name.length > 22
+              ? item.name.slice(0, 22) + "\u2026"
+              : item.name;
+          const row = document.createElement("div");
+          row.style.cssText =
+            "display:grid;grid-template-columns:12px 1fr auto auto;gap:6px 10px;align-items:center;padding:3px 0;";
+          row.innerHTML =
+            `<span style="width:10px;height:10px;border-radius:50%;background:${item.color};flex-shrink:0"></span>` +
+            `<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.85rem">${escHtml(label)}</span>` +
+            `<span style="text-align:right;color:var(--color-muted);font-size:0.85rem;white-space:nowrap">${sym}${fmtNum(item.cost)}</span>` +
+            `<span style="text-align:right;font-weight:600;font-size:0.9rem;white-space:nowrap">${item.pct.toFixed(1)}%</span>`;
+          chartLegendEl.appendChild(row);
+        });
+
+        chartWrapEl.style.display = "block";
+      }
+
       // ── Scroll cue ───────────────────────────────────────────────────────
       function showScrollCue(text) {
         if (!scrollCueEl) return;
@@ -1154,10 +1504,10 @@
             scrollCueStep = 1;
             scrollCueTextEl.textContent = "↓ Book a free call";
           } else {
-            const ctaCardEl = document.getElementById("cta-card");
-            if (ctaCardEl) {
+            const ctaEl = document.getElementById("dish-capture");
+            if (ctaEl) {
               const top =
-                ctaCardEl.getBoundingClientRect().top + window.scrollY - 70;
+                ctaEl.getBoundingClientRect().top + window.scrollY - 70;
               window.scrollTo({ top, behavior: "smooth" });
             }
             hideScrollCue();
@@ -1168,14 +1518,12 @@
       document.getElementById("dish-form").addEventListener("submit", (e) => {
         e.preventDefault();
 
-        // Clear previous errors
         formErrorEl.style.display = "none";
         ingRowsEl
           .querySelectorAll('input[type="number"]')
           .forEach((inp) => inp.classList.remove("input-error"));
         document.getElementById("sellingPrice").classList.remove("input-error");
 
-        // Validate selling price
         const sellingPrice = parseFloat(
           document.getElementById("sellingPrice").value,
         );
@@ -1186,7 +1534,6 @@
           return;
         }
 
-        // Validate target food cost %
         const targetFoodCost = parseFloat(
           document.getElementById("targetFoodCost").value,
         );
@@ -1201,7 +1548,6 @@
           return;
         }
 
-        // Collect and validate ingredient rows
         const rows = Array.from(ingRowsEl.querySelectorAll(".ingredient-row"));
         const ingredients = [];
         let hasRowError = false;
@@ -1220,10 +1566,8 @@
           const qtyEmpty = qtyInput.value.trim() === "";
           const costEmpty = costInput.value.trim() === "";
 
-          // Fully empty rows → skip silently
           if (qtyEmpty && costEmpty) return;
 
-          // Partially filled → flag as error
           const qtyOk = !qtyEmpty && !isNaN(qty) && qty > 0;
           const costOk = !costEmpty && !isNaN(cost) && cost > 0;
 
@@ -1238,8 +1582,13 @@
 
           if (qtyOk && costOk) {
             const unitDef = UNITS[unit] || UNITS.g;
-            const costPerPortion = unitDef.calc(qty, cost);
-            ingredients.push({ name, qty, unit, cost, costPerPortion });
+            ingredients.push({
+              name,
+              qty,
+              unit,
+              cost,
+              costPerPortion: unitDef.calc(qty, cost),
+            });
           }
         });
 
@@ -1258,26 +1607,28 @@
         }
 
         // ── Calculate ────────────────────────────────────────────────────
+        const noVat = document.getElementById("noVat").checked;
+        const vatRate =
+          parseFloat(document.getElementById("vatRate").value) || 0;
+        const vatMultiplier = noVat ? 1 : 1 + vatRate / 100;
+        const priceExclVat = sellingPrice / vatMultiplier;
+
         const totalIngredientCost = ingredients.reduce(
           (s, ing) => s + ing.costPerPortion,
           0,
         );
-        const foodCostPct = (totalIngredientCost / sellingPrice) * 100;
-        const marginEur = sellingPrice - totalIngredientCost;
-        const marginPct = (marginEur / sellingPrice) * 100;
+        const foodCostPct = (totalIngredientCost / priceExclVat) * 100;
+        const marginEur = priceExclVat - totalIngredientCost;
+        const marginPct = (marginEur / priceExclVat) * 100;
         const status = getStatus(foodCostPct, targetFoodCost);
         const info = statusInfo(status);
 
-        // Biggest cost driver
         const biggest = [...ingredients].sort(
           (a, b) => b.costPerPortion - a.costPerPortion,
         )[0];
-
-        // Dish name
         const dishName =
           document.getElementById("dishName").value.trim() || "Your dish";
 
-        // Food cost context line
         const diff = Math.abs(foodCostPct - targetFoodCost);
         const diffText =
           foodCostPct < targetFoodCost
@@ -1287,23 +1638,28 @@
               : `${diff.toFixed(1)}pp above your ${targetFoodCost}% target`;
 
         // ── Populate results ─────────────────────────────────────────────
-        resultDishNameEl.textContent = dishName;
+        const currencySymbol = document
+          .getElementById("currencySymbol")
+          .value.trim();
+        const sym = currencySymbol;
 
+        resultDishNameEl.textContent = dishName;
         statusBadgeEl.textContent = info.label;
         statusBadgeEl.className = `status-badge ${info.cls}`;
 
-        resultTotalCostEl.textContent = fmtCurrency(totalIngredientCost);
+        resultTotalCostEl.textContent = sym + fmtNum(totalIngredientCost);
+        resultExclVatEl.textContent = `Excl. VAT: ${sym}${fmtNum(priceExclVat)}`;
 
         resultFoodCostPctEl.textContent = fmtPct(foodCostPct);
-        resultFoodCostCtxEl.textContent = `${fmtPct(foodCostPct)} food cost — ${diffText}`;
+        resultFoodCostCtxEl.textContent = `${fmtPct(foodCostPct)} food cost - ${diffText}`;
 
-        resultMarginEurEl.textContent = fmtCurrency(marginEur);
+        resultMarginEurEl.textContent = sym + fmtNum(marginEur);
         resultMarginPctEl.textContent = fmtPct(marginPct);
 
         if (ingredients.length > 1) {
           resultCostDriverEl.textContent =
-            `${escHtml(biggest.name)} accounts for ${fmtCurrency(biggest.costPerPortion)} ` +
-            `of your ${fmtCurrency(totalIngredientCost)} total ingredient cost.`;
+            `${biggest.name} accounts for ${sym}${fmtNum(biggest.costPerPortion)} ` +
+            `of your ${sym}${fmtNum(totalIngredientCost)} total ingredient cost.`;
           resultCostDriverEl.style.display = "block";
         } else {
           resultCostDriverEl.style.display = "none";
@@ -1311,35 +1667,83 @@
 
         seasonalityNudgeEl.style.display = "block";
 
-        // ── Show results, swap CTA V1 → V2 ──────────────────────────────
+        buildChart(ingredients, priceExclVat, marginPct, marginEur, sym);
+
         resultsEl.style.display = "block";
         resultsContent.classList.add("visible");
-        if (dishCtaSimpleEl) dishCtaSimpleEl.style.display = "none";
         document.getElementById("dish-capture").style.display = "block";
 
         showScrollCue("↓ Results below");
       });
 
-      // ── CSV export ───────────────────────────────────────────────────────
+      // ── PDF export ───────────────────────────────────────────────────────
       document.getElementById("exportBtn").addEventListener("click", () => {
-        const stripTags = (s) => String(s).replace(/<[^>]*>/g, "").trim();
-        const q = (s) => `"${stripTags(s).replace(/"/g, '""')}"`;
+        window.print();
+      });
 
-        const rows = [
+      // ── CSV export ───────────────────────────────────────────────────────
+      document.getElementById("exportCsvBtn").addEventListener("click", () => {
+        const q = (s) => `"${String(s).replace(/"/g, '""')}"`;
+
+        const sellingPriceVal =
+          parseFloat(document.getElementById("sellingPrice").value) || 0;
+        const noVatChecked = document.getElementById("noVat").checked;
+        const vatRateVal =
+          parseFloat(document.getElementById("vatRate").value) || 0;
+        const vatMultiplier = noVatChecked ? 1 : 1 + vatRateVal / 100;
+        const priceExclVatVal = sellingPriceVal / vatMultiplier;
+        const symVal = document.getElementById("currencySymbol").value.trim();
+
+        const csvRows = [
           ["Metric", "Value"],
-          ["Dish name",                        document.getElementById("resultDishName").textContent],
-          ["Target food cost %",               document.getElementById("targetFoodCost").value + "%"],
-          ["Total ingredient cost per portion", document.getElementById("resultTotalCost").textContent],
-          ["Food cost %",                      document.getElementById("resultFoodCostPct").textContent],
-          ["Food cost vs target",              document.getElementById("resultFoodCostCtx").textContent],
-          ["Gross margin per portion (€)",     document.getElementById("resultMarginEur").textContent],
-          ["Gross margin %",                   document.getElementById("resultMarginPct").textContent],
-          ["Biggest cost driver",              document.getElementById("resultCostDriver").textContent],
-          ["Status",                           document.getElementById("statusBadge").textContent],
+          [
+            "Dish name",
+            document.getElementById("dishName").value.trim() || "Your dish",
+          ],
+          ["Currency", symVal],
+          ["Selling price (incl. VAT)", sellingPriceVal.toFixed(2)],
+          [
+            "VAT rate %",
+            noVatChecked ? "0 (exempt)" : vatRateVal.toFixed(1) + "%",
+          ],
+          ["Selling price (excl. VAT)", priceExclVatVal.toFixed(2)],
+          [
+            "Target food cost %",
+            document.getElementById("targetFoodCost").value + "%",
+          ],
+          [
+            "Total ingredient cost per portion",
+            document.getElementById("resultTotalCost").innerText,
+          ],
+          [
+            "Food cost % (excl. VAT)",
+            document.getElementById("resultFoodCostPct").innerText,
+          ],
+          [
+            "Food cost vs target",
+            document.getElementById("resultFoodCostCtx").innerText,
+          ],
+          [
+            "Gross margin per portion",
+            document.getElementById("resultMarginEur").innerText,
+          ],
+          [
+            "Gross margin %",
+            document.getElementById("resultMarginPct").innerText,
+          ],
+          [
+            "Biggest cost driver",
+            document.getElementById("resultCostDriver").innerText,
+          ],
+          ["Status", document.getElementById("statusBadge").innerText],
         ];
 
-        const csv = rows.map(([m, v]) => `${q(m)},${q(v)}`).join("\r\n");
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const csvContent = csvRows
+          .map(([m, v]) => `${q(m)},${q(v)}`)
+          .join("\r\n");
+        const blob = new Blob(["\uFEFF" + csvContent], {
+          type: "text/csv;charset=utf-8;",
+        });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
