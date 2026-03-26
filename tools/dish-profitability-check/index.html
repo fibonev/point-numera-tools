@@ -25,6 +25,11 @@
       property="og:url"
       content="https://pointnumera.com/tools/dish-profitability-check/"
     />
+    <meta property="og:image" content="https://tools.pointnumera.com/tools/shared/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://tools.pointnumera.com/tools/shared/og-image.png" />
     <link rel="stylesheet" href="../shared/base.css" />
     <link rel="stylesheet" href="../shared/ui.css" />
     <script src="../shared/capture.js" defer></script>
@@ -442,6 +447,38 @@
         background: rgba(14, 79, 71, 0.06);
       }
 
+      /* ── Form actions: equal-width buttons ───────────────────────────── */
+      .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+      }
+      .form-actions > * {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+      @media (max-width: 480px) {
+        .form-actions {
+          flex-direction: column;
+        }
+        .form-actions > * {
+          flex: unset;
+          width: 100%;
+        }
+      }
+      .btn-outline-primary {
+        background: #ffffff;
+      }
+      .form-disclaimer {
+        font-size: 0.82rem;
+        color: var(--color-muted);
+        margin-top: var(--space-sm);
+        line-height: 1.5;
+      }
+
       /* ── Misc ─────────────────────────────────────────────────────────── */
       .section-compact {
         padding: var(--space-md) 0;
@@ -765,18 +802,14 @@
         </button>
         <nav class="nav-links">
           <a class="nav-link" data-nav href="/">Tools Hub</a>
+          <a class="nav-link" data-nav href="./">Dish Profitability Check</a>
+          <a class="nav-link" href="https://www.pointnumera.com/#contact"
+            >Contact ↗</a
+          >
           <a class="nav-link" href="https://www.pointnumera.com"
             >Back to site ↗</a
           >
-          <a class="nav-link" data-nav href="./">Dish Profitability Check</a>
         </nav>
-        <a
-          class="btn btn-nav-cta"
-          href="https://cal.com/pointnumera/dish-profitability-review"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Get in touch</a
-        >
       </div>
     </header>
 
@@ -784,8 +817,7 @@
       <section class="container hero">
         <h1>Which dish on your menu is quietly losing money?</h1>
         <p class="subtitle">
-          For restaurant owners who want to know their real margin before the
-          next price increase forces the question.
+          Know your real margin before the next price increase.
         </p>
         <p class="results-teaser">
           Most operators find at least one dish running
@@ -1122,13 +1154,18 @@
                     Send it to me
                   </button>
                   <a
-                    class="btn-outline-primary"
+                    class="btn-outline-primary capture-hide-on-success"
                     href="https://cal.com/pointnumera/dish-profitability-review"
                     target="_blank"
                     rel="noopener noreferrer"
                     >Book a free menu review call</a
                   >
                 </div>
+                <p class="form-disclaimer capture-hide-on-success">
+                  The spreadsheet is on its way. It may take a few minutes to
+                  arrive. We need to confirm your signup before sending. Check
+                  your spam folder if you don't see it shortly.
+                </p>
               </div>
               <div class="form-msg" aria-live="polite"></div>
             </div>
@@ -1169,11 +1206,33 @@
             </p>
           </div>
           <div class="faq-item">
+            <strong
+              >Does this tell me if my dish is actually profitable?</strong
+            >
+            <p>
+              It shows whether your ingredient cost is healthy relative to your
+              selling price. Keep in mind, true profitability includes fixed
+              costs too. Rent, labour, energy, and equipment don't change with
+              each portion served. Once your margins cover those overhead costs
+              across enough covers, the dish becomes genuinely profitable. A
+              healthy food cost % is a necessary starting point, not the full
+              picture. If you want to understand your break-even point or full
+              cost structure, that's where a CFO conversation helps.
+            </p>
+          </div>
+          <div class="faq-item">
             <strong>Why do I enter prices excluding VAT?</strong>
             <p>
               VAT is collected on behalf of the tax authority, it's not your
               revenue. Measuring food cost against your excl. VAT price gives a
               cleaner view of your actual margin.
+            </p>
+            <p>
+              Not based in Europe? VAT (Value Added Tax) is a consumption tax
+              added to the sale price. If your region uses a different term: GST,
+              sales tax, HST. The same logic applies: enter your menu price
+              including any tax, and set the rate accordingly. If tax doesn't
+              apply to your sales, check "No VAT."
             </p>
           </div>
           <div class="faq-item">
@@ -1197,21 +1256,6 @@
             <p>
               No. All calculations run in your browser. Nothing is saved or
               transmitted unless you choose to submit your email.
-            </p>
-          </div>
-          <div class="faq-item">
-            <strong
-              >Does this tell me if my dish is actually profitable?</strong
-            >
-            <p>
-              It shows whether your ingredient cost is healthy relative to your
-              selling price. Keep in mind, true profitability includes fixed
-              costs too. Rent, labour, energy, and equipment don't change with
-              each portion served. Once your margins cover those overhead costs
-              across enough covers, the dish becomes genuinely profitable. A
-              healthy food cost % is a necessary starting point, not the full
-              picture. If you want to understand your break-even point or full
-              cost structure, that's where a CFO conversation helps.
             </p>
           </div>
         </div>
@@ -1277,10 +1321,18 @@
           },
           {
             "@type": "Question",
+            "name": "Does this tell me if my dish is actually profitable?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "It shows whether your ingredient cost is healthy relative to your selling price. Keep in mind, true profitability includes fixed costs too. Rent, labour, energy, and equipment don't change with each portion served. Once your margins cover those overhead costs across enough covers, the dish becomes genuinely profitable. A healthy food cost % is a necessary starting point, not the full picture."
+            }
+          },
+          {
+            "@type": "Question",
             "name": "Why do I enter prices excluding VAT?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "VAT is collected on behalf of the tax authority, it's not your revenue. Measuring food cost against your excl. VAT price gives a cleaner view of your actual margin."
+              "text": "VAT is collected on behalf of the tax authority, it's not your revenue. Measuring food cost against your excl. VAT price gives a cleaner view of your actual margin. Not based in Europe? VAT (Value Added Tax) is a consumption tax added to the sale price. If your region uses a different term — GST, sales tax, HST — the same logic applies: enter your menu price including any tax, and set the rate accordingly. If tax doesn't apply to your sales, check \"No VAT.\""
             }
           },
           {
@@ -1652,7 +1704,7 @@
             resultsEl &&
               resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
             scrollCueStep = 1;
-            scrollCueTextEl.textContent = "↓ Book a free call";
+            scrollCueTextEl.textContent = "↓ Get the full menu checker";
           } else {
             const ctaEl = document.getElementById("dish-capture");
             if (ctaEl) {
@@ -1894,10 +1946,16 @@
         const blob = new Blob(["\uFEFF" + csvContent], {
           type: "text/csv;charset=utf-8;",
         });
+        const rawDishName =
+          document.getElementById("dishName").value.trim() || "dish";
+        const safeDishName = rawDishName
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "dish-profitability-check.csv";
+        a.download = `dish-profitability-${safeDishName}.csv`;
         a.click();
         URL.revokeObjectURL(url);
       });
