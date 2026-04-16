@@ -1,0 +1,1403 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Roast Batch Profitability Checker | Point Numera</title>
+    <meta
+      name="description"
+      content="Enter your green bean cost, batch size, and selling price to see exactly what margin each roast batch produces — and whether it's healthy."
+    />
+    <link
+      rel="canonical"
+      href="https://pointnumera.com/tools/roast-batch-checker/"
+    />
+    <meta
+      property="og:title"
+      content="Roast Batch Profitability Checker | Point Numera"
+    />
+    <meta
+      property="og:description"
+      content="Enter your green bean cost, batch size, and selling price to see exactly what margin each roast batch produces — and whether it's healthy."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://pointnumera.com/tools/roast-batch-checker/"
+    />
+    <meta property="og:image" content="https://tools.pointnumera.com/tools/shared/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://tools.pointnumera.com/tools/shared/og-image.png" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="../shared/ui.css" />
+    <script src="../shared/capture.js" defer></script>
+    <script src="../shared/app.js" defer></script>
+    <style>
+      .page-wrap {
+        padding-bottom: var(--space-xxl);
+      }
+
+      /* ── Two-column tool grid ─────────────────────────────────────────────── */
+      .calc-grid {
+        display: grid;
+        gap: var(--space-lg);
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        align-items: start;
+      }
+      .results-card {
+        scroll-margin-top: 140px;
+      }
+
+      /* ── Input suffix/prefix wrappers ────────────────────────────────────── */
+      .input-suffix-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .input-suffix-wrap input {
+        width: 100%;
+        padding-right: 38px;
+      }
+      .input-suffix {
+        position: absolute;
+        right: 10px;
+        font-weight: 600;
+        color: var(--color-muted);
+        pointer-events: none;
+        font-size: 0.9rem;
+        white-space: nowrap;
+      }
+      .input-prefix-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .input-prefix-wrap input {
+        width: 100%;
+        padding-left: 22px;
+      }
+      .input-prefix {
+        position: absolute;
+        left: 10px;
+        font-weight: 600;
+        color: var(--color-muted);
+        pointer-events: none;
+        font-size: 0.9rem;
+      }
+
+      /* ── Wholesale / retail pill toggle ──────────────────────────────────── */
+      .pill-toggle {
+        display: inline-flex;
+        background: var(--color-surface-2);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-pill);
+        padding: 3px;
+        gap: 2px;
+      }
+      .pill-toggle input[type="radio"] {
+        display: none;
+      }
+      .pill-toggle label {
+        padding: 7px 16px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--color-muted);
+        border-radius: var(--r-pill);
+        transition: background 0.18s, color 0.18s;
+        user-select: none;
+        margin: 0;
+      }
+      .pill-toggle input[type="radio"]:checked + label {
+        background: var(--color-primary);
+        color: #ffffff;
+      }
+
+      /* ── Override checkbox row ───────────────────────────────────────────── */
+      .override-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .override-row input[type="checkbox"] {
+        width: 15px;
+        height: 15px;
+        accent-color: var(--color-primary);
+        cursor: pointer;
+        flex-shrink: 0;
+        margin: 0;
+      }
+      .override-row label {
+        font-size: 0.82rem;
+        font-weight: 400;
+        color: var(--color-muted);
+        cursor: pointer;
+        margin: 0;
+      }
+
+      /* ── Form section divider ────────────────────────────────────────────── */
+      .form-divider {
+        border: none;
+        border-top: 1px solid var(--color-border);
+        margin: var(--space-md) 0;
+      }
+      .form-section-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-muted);
+        margin: 0 0 var(--space-sm);
+      }
+
+      /* ── Status badges ───────────────────────────────────────────────────── */
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: var(--r-sm);
+        font-weight: 600;
+        font-size: 0.82rem;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface-2);
+        white-space: nowrap;
+      }
+      .status-healthy {
+        color: var(--color-primary);
+        border-color: rgba(14, 79, 71, 0.3);
+        background: rgba(14, 79, 71, 0.06);
+      }
+      .status-tight {
+        color: #b36b00;
+        border-color: rgba(179, 107, 0, 0.3);
+        background: rgba(179, 107, 0, 0.06);
+      }
+      .status-risk {
+        color: #b00020;
+        border-color: rgba(176, 0, 32, 0.25);
+        background: rgba(176, 0, 32, 0.06);
+      }
+
+      /* ── Results empty state ─────────────────────────────────────────────── */
+      .results-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        min-height: 280px;
+        padding: 40px 20px;
+        color: var(--color-muted);
+      }
+      .results-empty p {
+        margin: 0;
+        font-size: 0.92rem;
+        color: var(--color-muted);
+      }
+
+      /* ── Results: header ─────────────────────────────────────────────────── */
+      .result-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--space-xs);
+        margin-bottom: var(--space-md);
+      }
+      .result-batch-name {
+        font-family: "Ancizar Sans", system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--color-text);
+      }
+
+      /* ── Primary result highlight (yellow box) ───────────────────────────── */
+      .result-cost-highlight {
+        background: #f4ecbd;
+        border-radius: var(--r-md);
+        padding: var(--space-md);
+        margin-bottom: var(--space-md);
+      }
+      .rch-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #6b5500;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 4px;
+      }
+      .rch-value {
+        font-family: "Ancizar Sans", system-ui, sans-serif;
+        font-size: 2.1rem;
+        font-weight: 700;
+        color: #2a1f00;
+        line-height: 1.1;
+      }
+      .rch-sub {
+        font-size: 0.85rem;
+        color: #7a6a30;
+        margin-top: 4px;
+      }
+
+      /* ── Metrics grid ────────────────────────────────────────────────────── */
+      .result-grid {
+        display: grid;
+        gap: var(--space-sm);
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        margin-bottom: var(--space-md);
+      }
+      .result-item {
+        padding: var(--space-sm);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-sm);
+        background: var(--color-surface-2);
+      }
+      .result-item h4 {
+        margin: 0 0 4px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--color-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .result-value {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--color-text);
+      }
+      .result-value.val-positive { color: #1a7a3a; }
+      .result-value.val-tight    { color: #b36b00; }
+      .result-value.val-risk     { color: #b00020; }
+
+      /* Break-even item (shown only when overhead > 0) */
+      .breakeven-item { display: none; }
+
+      /* ── Interpretation block ────────────────────────────────────────────── */
+      .interpretation-block {
+        padding: var(--space-sm) var(--space-md);
+        border-left: 3px solid var(--color-secondary);
+        background: rgba(164, 214, 164, 0.08);
+        border-radius: 0 var(--r-sm) var(--r-sm) 0;
+        margin-bottom: var(--space-md);
+      }
+      .interpretation-block p {
+        margin: 0 0 var(--space-xs);
+        font-size: 0.92rem;
+        color: var(--color-text);
+      }
+      .interpretation-block p:last-child { margin-bottom: 0; }
+      .interp-lever  { color: var(--color-muted) !important; }
+      .interp-action { font-weight: 700; color: var(--color-primary) !important; }
+
+      /* ── Sensitivity table ───────────────────────────────────────────────── */
+      .sensitivity-section {
+        margin-bottom: var(--space-md);
+      }
+      .sensitivity-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-muted);
+        margin-bottom: var(--space-xs);
+      }
+      .sensitivity-table {
+        width: 100%;
+        font-size: 0.88rem;
+      }
+      .sensitivity-table th {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--color-muted);
+        text-align: right;
+        padding: 5px 8px 8px;
+        border-bottom: 1px solid var(--color-border);
+      }
+      .sensitivity-table th:first-child { text-align: left; }
+      .sensitivity-table td {
+        padding: 8px 8px;
+        border-bottom: 1px solid var(--color-border);
+        text-align: right;
+        color: var(--color-text);
+      }
+      .sensitivity-table td:first-child { text-align: left; color: var(--color-muted); }
+      .sensitivity-table tr:last-child td { border-bottom: none; }
+      .sensitivity-table tr.row-current td { color: var(--color-primary); font-weight: 700; }
+      .sensitivity-table tr.row-current td:first-child { color: var(--color-primary); }
+      .delta-neg { color: #b00020 !important; }
+      .delta-pos { color: #1a7a3a !important; }
+
+      /* ── Disclaimer ──────────────────────────────────────────────────────── */
+      .disclaimer {
+        margin-top: var(--space-sm);
+        font-size: 0.85rem;
+        color: var(--color-muted);
+      }
+
+      /* ── CTA capture card ────────────────────────────────────────────────── */
+      #batch-capture {
+        display: none;
+      }
+      .btn-outline-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        border: 1px solid var(--color-primary);
+        color: var(--color-primary);
+        border-radius: var(--r-pill);
+        padding: 10px 20px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.15s ease;
+        white-space: nowrap;
+      }
+      .btn-outline-primary:hover {
+        background: rgba(14, 79, 71, 0.06);
+        color: var(--color-primary);
+      }
+      .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+      }
+      .form-actions > * {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+        justify-content: center;
+      }
+      @media (max-width: 480px) {
+        .form-actions { flex-direction: column; }
+        .form-actions > * { flex: unset; width: 100%; }
+      }
+      .form-disclaimer {
+        font-size: 0.82rem;
+        color: var(--color-muted);
+        margin-top: var(--space-sm);
+        line-height: 1.5;
+      }
+
+      /* ── Misc ────────────────────────────────────────────────────────────── */
+      .section-compact { padding: var(--space-md) 0; }
+      .subtitle { font-size: 1.05rem; color: var(--color-muted); max-width: 640px; }
+      .friction-line { font-size: 0.9rem; color: var(--color-muted); margin-bottom: var(--space-lg); }
+      .results-cue {
+        display: none;
+        font-size: 0.9rem;
+        color: var(--color-muted);
+        margin-top: var(--space-xs);
+      }
+      .faq-list { margin-top: var(--space-md); display: grid; gap: var(--space-sm); }
+      .faq-item {
+        padding: var(--space-md);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-sm);
+        background: var(--color-surface);
+      }
+      .faq-item strong { display: block; margin-bottom: var(--space-2xs); }
+
+      @media (min-width: 769px) {
+        .section-compact { padding: var(--space-lg) 0; }
+      }
+      @media (max-width: 480px) {
+        .card { padding: var(--space-md); }
+        .result-grid { grid-template-columns: 1fr 1fr; }
+      }
+
+      /* ── Nav CTA ─────────────────────────────────────────────────────────── */
+      .btn-nav-cta {
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: #f0ede4;
+        background: transparent;
+        border-radius: var(--r-pill);
+        padding: 7px 18px;
+        font-size: 0.85rem;
+        font-family: inherit;
+        white-space: nowrap;
+        text-decoration: none;
+        transition: border-color 0.15s, background 0.15s;
+      }
+      .btn-nav-cta:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.7);
+        color: #f0ede4;
+      }
+
+      /* ── Tool footer ─────────────────────────────────────────────────────── */
+      .tool-footer {
+        background: #0a0f0e;
+        border-top: 1px solid #1e2e2b;
+        padding: 48px 0 28px;
+        margin-top: var(--space-xl);
+      }
+      .footer-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-xl);
+        align-items: start;
+        margin-bottom: var(--space-lg);
+      }
+      .footer-brand img {
+        display: block;
+        height: 32px;
+        width: auto;
+        margin-bottom: 12px;
+        filter: brightness(0) invert(1);
+        opacity: 0.9;
+      }
+      .footer-tagline {
+        font-size: 0.88rem;
+        color: #8a9e9a;
+        line-height: 1.6;
+        margin: 0 0 16px;
+        max-width: 280px;
+      }
+      .footer-linkedin {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: 1px solid #1e2e2b;
+        border-radius: 50%;
+        color: #8a9e9a;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: border-color 0.15s, color 0.15s;
+      }
+      .footer-linkedin:hover { border-color: #a4d6a4; color: #a4d6a4; }
+      .footer-right {
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-start;
+        padding-top: 4px;
+      }
+      .footer-links {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        text-align: right;
+      }
+      .footer-links a {
+        font-size: 0.88rem;
+        color: #8a9e9a;
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+      .footer-links a:hover { color: #f0ede4; }
+      .footer-copy {
+        font-size: 0.78rem;
+        color: #4a5e5a;
+        border-top: 1px solid #1e2e2b;
+        padding-top: 20px;
+      }
+      @media (max-width: 600px) {
+        .footer-inner { grid-template-columns: 1fr; gap: var(--space-lg); }
+        .footer-right { justify-content: flex-start; }
+        .footer-links { text-align: left; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- ── Navigation ──────────────────────────────────────────────────────── -->
+    <header class="top-nav">
+      <div class="container">
+        <a class="brand" href="/">
+          <img src="../shared/logo.svg" alt="Point Numera logo" />
+        </a>
+        <button
+          class="nav-toggle"
+          aria-label="Open menu"
+          aria-expanded="false"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="nav-links">
+          <a class="nav-link" data-nav href="/">Tools Hub</a>
+          <a class="nav-link" data-nav href="./">Roast Batch Checker</a>
+          <a class="nav-link" href="https://www.pointnumera.com/#contact">Contact ↗</a>
+          <a class="nav-link" href="https://www.pointnumera.com">Back to site ↗</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-wrap">
+
+      <!-- ── Hero ──────────────────────────────────────────────────────────── -->
+      <section class="container hero">
+        <h1>Is your roast batch actually profitable?</h1>
+        <p class="subtitle">
+          Know your real margin before you roast the next kilo.
+        </p>
+        <p>
+          Most roasters find at least one product running
+          <span style="color: #0e4f47">10+ points</span> below a healthy
+          margin. This tool shows you exactly where you stand.
+        </p>
+        <p class="friction-line">
+          No signup. Enter your batch details below. Results update as you type.
+        </p>
+      </section>
+
+      <!-- ── Tool ──────────────────────────────────────────────────────────── -->
+      <section class="container section section-compact">
+        <div class="calc-grid">
+
+          <!-- LEFT: inputs -->
+          <div class="card calc-card">
+
+            <p class="form-section-label">Batch details</p>
+
+            <div class="input-group">
+              <label for="batchName">Batch or blend name</label>
+              <input
+                id="batchName"
+                type="text"
+                placeholder="e.g. Ethiopia Natural, House Blend"
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="greenBeanCost">Green bean cost (€ / kg)</label>
+              <div class="input-prefix-wrap">
+                <span class="input-prefix">&euro;</span>
+                <input
+                  id="greenBeanCost"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="e.g. 7.50"
+                />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="roastLoss">Roast loss (%)</label>
+              <div class="input-suffix-wrap">
+                <input
+                  id="roastLoss"
+                  type="number"
+                  min="0"
+                  max="40"
+                  step="0.1"
+                  value="18"
+                />
+                <span class="input-suffix">%</span>
+              </div>
+              <div class="helper-text">
+                The weight your beans lose in the roaster &mdash; usually around 18%.
+                Lighter roasts lose less (15%), darker roasts more (20&ndash;22%).
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="batchSize">Batch size (grams of green beans)</label>
+              <div class="input-suffix-wrap">
+                <input
+                  id="batchSize"
+                  type="number"
+                  min="1"
+                  step="1"
+                  placeholder="e.g. 5000"
+                />
+                <span class="input-suffix">g</span>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="bagWeight">Bag weight</label>
+              <div class="input-suffix-wrap">
+                <input
+                  id="bagWeight"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value="250"
+                />
+                <span class="input-suffix">g</span>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="bagsPerBatch">Bags per batch</label>
+              <div class="input-suffix-wrap">
+                <input
+                  id="bagsPerBatch"
+                  type="number"
+                  min="1"
+                  step="1"
+                  placeholder="Auto"
+                  disabled
+                />
+                <span class="input-suffix">bags</span>
+              </div>
+              <div class="override-row">
+                <input type="checkbox" id="overrideBags" />
+                <label for="overrideBags">Override &mdash; enter actual bags filled</label>
+              </div>
+              <div class="helper-text" id="bagsHelperText">&nbsp;</div>
+            </div>
+
+            <hr class="form-divider" />
+            <p class="form-section-label">Pricing</p>
+
+            <div class="input-group">
+              <label>Price channel</label>
+              <div class="pill-toggle">
+                <input
+                  type="radio"
+                  name="priceType"
+                  id="priceRetail"
+                  value="retail"
+                  checked
+                />
+                <label for="priceRetail">Retail</label>
+                <input
+                  type="radio"
+                  name="priceType"
+                  id="priceWholesale"
+                  value="wholesale"
+                />
+                <label for="priceWholesale">Wholesale</label>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="sellingPrice">Selling price per bag</label>
+              <div class="input-prefix-wrap">
+                <span class="input-prefix">&euro;</span>
+                <input
+                  id="sellingPrice"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="e.g. 14.50"
+                />
+              </div>
+              <div class="helper-text" id="sellingPriceHelper">
+                What a customer pays walking in or buying online.
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="packagingCost">Packaging cost per bag</label>
+              <div class="input-prefix-wrap">
+                <span class="input-prefix">&euro;</span>
+                <input
+                  id="packagingCost"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="e.g. 0.80"
+                />
+              </div>
+            </div>
+
+            <hr class="form-divider" />
+            <p class="form-section-label">
+              Overhead
+              <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span>
+            </p>
+
+            <div class="input-group">
+              <label for="roastingOverhead">Roasting overhead per batch</label>
+              <div class="input-prefix-wrap">
+                <span class="input-prefix">&euro;</span>
+                <input
+                  id="roastingOverhead"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="e.g. 12.00"
+                />
+              </div>
+              <div class="helper-text">
+                Electricity, machine time, your time per batch &mdash; spread across all bags.
+              </div>
+            </div>
+
+            <button
+              type="button"
+              id="calcBtn"
+              class="btn btn-primary"
+              style="margin-top: var(--space-xs); width: 100%"
+            >
+              Check this batch
+            </button>
+            <div id="calcResultsCue" class="results-cue">Results below &darr;</div>
+          </div><!-- /inputs card -->
+
+          <!-- RIGHT: results -->
+          <div class="card results-card" id="resultsPanel">
+
+            <!-- Empty state -->
+            <div class="results-empty" id="resultsEmpty">
+              <p>Fill in your batch details on the left<br/>to see your margin here.</p>
+            </div>
+
+            <!-- Results content (hidden until inputs are ready) -->
+            <div id="resultsContent" style="display:none">
+
+              <!-- Header: batch name + status badge -->
+              <div class="result-header">
+                <span id="resultBatchName" class="result-batch-name" style="display:none"></span>
+                <span id="statusBadge" class="status-badge">—</span>
+              </div>
+
+              <!-- Primary metric: margin per bag (yellow highlight) -->
+              <div class="result-cost-highlight">
+                <div class="rch-label">Margin per bag</div>
+                <div id="rchMarginBag" class="rch-value">—</div>
+                <div id="rchMarginPct" class="rch-sub"></div>
+              </div>
+
+              <!-- Metrics grid -->
+              <div class="result-grid">
+                <div class="result-item">
+                  <h4>Cost / roasted kg</h4>
+                  <div id="resCostPerKg" class="result-value">—</div>
+                </div>
+                <div class="result-item">
+                  <h4>Cost per bag</h4>
+                  <div id="resCostPerBag" class="result-value">—</div>
+                </div>
+                <div class="result-item">
+                  <h4>Total batch margin</h4>
+                  <div id="resTotalMargin" class="result-value">—</div>
+                </div>
+                <div class="result-item">
+                  <h4>Roasted yield</h4>
+                  <div id="resYield" class="result-value">—</div>
+                </div>
+                <div class="result-item breakeven-item" id="resBreakevenItem">
+                  <h4>Break-even bags</h4>
+                  <div id="resBreakeven" class="result-value">—</div>
+                </div>
+              </div>
+
+              <!-- Interpretation -->
+              <div class="interpretation-block" id="interpretBlock">
+                <p id="interpWhat"></p>
+                <p class="interp-lever" id="interpLever"></p>
+                <p class="interp-action" id="interpAction"></p>
+              </div>
+
+              <!-- Sensitivity table -->
+              <div class="sensitivity-section">
+                <div class="sensitivity-label">What if bean prices rise?</div>
+                <table class="sensitivity-table">
+                  <thead>
+                    <tr>
+                      <th>Green bean cost</th>
+                      <th>Margin %</th>
+                      <th>vs. now</th>
+                    </tr>
+                  </thead>
+                  <tbody id="sensitivityBody"></tbody>
+                </table>
+              </div>
+
+              <p class="disclaimer">
+                This is a practical first check, not a substitute for a full financial model.
+                Results depend on the assumptions you enter. Sector context, taxes, overhead
+                structure, and timing can materially change the outcome.
+              </p>
+
+            </div><!-- /resultsContent -->
+          </div><!-- /results card -->
+
+        </div><!-- /calc-grid -->
+      </section>
+
+      <!-- ── CTA: multi-batch tracker ──────────────────────────────────────── -->
+      <section id="batch-capture" class="container section-compact">
+        <div
+          class="card section-divider capture-card"
+          style="max-width: 560px; margin: 0 auto"
+        >
+          <div class="capture-content">
+            <h3>Get the multi-batch tracker (.xlsx)</h3>
+            <p>
+              Track multiple roasts in one sheet &mdash; compare margin across
+              blends, bag sizes, and channels. Free to download.
+            </p>
+          </div>
+          <!-- TODO: Replace FORM_ID with the MailerLite form ID for this tool -->
+          <form
+            id="batchCaptureForm"
+            class="capture-form"
+            data-capture
+            action="https://assets.mailerlite.com/jsonp/1801866/forms/FORM_ID/subscribe"
+            method="post"
+          >
+            <input type="hidden" name="ml-submit" value="1" />
+            <input type="hidden" name="anticsrf" value="true" />
+            <input
+              type="hidden"
+              name="fields[source_tool]"
+              value="roast_batch_checker"
+            />
+            <div class="row-form">
+              <div class="capture-fields">
+                <div class="form-row capture-hide-on-success">
+                  <label for="batchCaptureName">Name (optional)</label>
+                  <input
+                    id="batchCaptureName"
+                    type="text"
+                    name="fields[name]"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div class="form-row capture-hide-on-success">
+                  <label for="batchCaptureEmail">Email</label>
+                  <input
+                    id="batchCaptureEmail"
+                    type="email"
+                    name="fields[email]"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+                <div class="form-row checkbox-row capture-hide-on-success">
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="fields[consent_checkbox]"
+                      value="yes"
+                      required
+                    />
+                    <span>I agree to receive the tracker and occasional updates.</span>
+                  </label>
+                </div>
+                <div class="form-actions">
+                  <button
+                    type="submit"
+                    class="btn btn-primary capture-hide-on-success"
+                  >
+                    Send it to me
+                  </button>
+                  <a
+                    class="btn-outline-primary capture-hide-on-success"
+                    href="https://cal.com/pointnumera"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >Book a free roastery review</a>
+                </div>
+                <p class="form-disclaimer capture-hide-on-success">
+                  The spreadsheet is on its way. It may take a few minutes to
+                  arrive. Check your spam folder if you don&rsquo;t see it shortly.
+                </p>
+              </div>
+              <div class="form-msg" aria-live="polite"></div>
+            </div>
+            <div class="row-success" style="display: none">
+              <div class="form-msg" aria-live="polite"></div>
+              <div class="form-actions">
+                <a
+                  class="btn-outline-primary"
+                  href="https://cal.com/pointnumera"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >Book a free roastery review</a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ── FAQ ───────────────────────────────────────────────────────────── -->
+      <section class="container section section-compact">
+        <h2>FAQ</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <strong>What is roast loss and why does it matter?</strong>
+            <p>
+              Roast loss is the percentage of weight your green beans lose during
+              roasting due to moisture evaporation. A typical roast loses 15&ndash;22%
+              of weight. It directly affects how much coffee ends up in each bag
+              and therefore your true bean cost per bag.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>What margin should a specialty roaster target?</strong>
+            <p>
+              Most specialty roasters target a margin of 55&ndash;65% per bag.
+              Below 40% leaves little room for bean price movements, waste, or
+              slower sales. Above 65% is strong, but check whether your price
+              is competitively positioned for your channel.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>What counts as roasting overhead?</strong>
+            <p>
+              Electricity, gas, machine maintenance time, and your own labour
+              for the roast. Divide your total cost per session by the number
+              of batches in that session to get a per-batch overhead.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>Wholesale vs. retail &mdash; which should I use?</strong>
+            <p>
+              Run it for both. Wholesale prices are typically 30&ndash;50% lower
+              than retail. The margin calculation shows whether your wholesale
+              price still covers all costs and leaves a sustainable margin.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>Does this include labour, rent, or other overhead?</strong>
+            <p>
+              Only if you enter it in the optional overhead field. The tool
+              focuses on direct batch costs vs. selling price. Business-level
+              overhead (rent, staff, equipment depreciation) applies at a
+              higher level. Use this to flag whether a product is worth
+              investigating further.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>Do you store my data?</strong>
+            <p>
+              No. All calculations run in your browser. Nothing is saved or
+              transmitted unless you choose to submit your email.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ── Footer ──────────────────────────────────────────────────────────── -->
+    <footer class="tool-footer">
+      <div class="container">
+        <div class="footer-inner">
+          <div class="footer-left">
+            <a href="https://www.pointnumera.com" class="footer-brand">
+              <img src="../shared/logo.svg" alt="Point Numera" />
+            </a>
+            <p class="footer-tagline">Turning Numbers Into Strategy</p>
+            <a
+              href="https://www.linkedin.com/company/point-numera"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="footer-linkedin"
+              aria-label="Point Numera on LinkedIn"
+            >in</a>
+          </div>
+          <div class="footer-right">
+            <nav class="footer-links">
+              <a href="https://www.pointnumera.com">pointnumera.com</a>
+              <a href="/tools/">Tools Hub</a>
+              <a href="mailto:info@pointnumera.com">info@pointnumera.com</a>
+            </nav>
+          </div>
+        </div>
+        <div class="footer-copy">
+          &copy; Point Numera <span data-year></span>. All rights reserved.
+        </div>
+      </div>
+    </footer>
+
+    <!-- ── Scroll cue ───────────────────────────────────────────────────────── -->
+    <div id="scrollCue" class="pn-scroll-cue">
+      <span id="scrollCueText" class="pn-scroll-cue-text">&#x2193; Results below</span>
+      <span class="pn-scroll-cue-action">Jump</span>
+    </div>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is roast loss and why does it matter?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Roast loss is the percentage of weight your green beans lose during roasting due to moisture evaporation. A typical roast loses 15–22% of weight. It directly affects how much coffee ends up in each bag and therefore your true bean cost per bag."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What margin should a specialty roaster target?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Most specialty roasters target a margin of 55–65% per bag. Below 40% leaves little room for bean price movements, waste, or slower sales."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does this include labour, rent, or other overhead?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Only if you enter it in the optional overhead field. The tool focuses on direct batch costs vs. selling price. Business-level overhead applies at a higher level."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do you store my data?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. All calculations run in your browser. Nothing is saved or transmitted unless you choose to submit your email."
+            }
+          }
+        ]
+      }
+    </script>
+
+    <script>
+      /* ── DOM refs ───────────────────────────────────────────────────────── */
+      const $ = id => document.getElementById(id);
+
+      const elBatchName    = $('batchName');
+      const elGBC          = $('greenBeanCost');
+      const elRoastLoss    = $('roastLoss');
+      const elBatchSize    = $('batchSize');
+      const elBagWeight    = $('bagWeight');
+      const elBags         = $('bagsPerBatch');
+      const elOverride     = $('overrideBags');
+      const elPrice        = $('sellingPrice');
+      const elPkgCost      = $('packagingCost');
+      const elOverhead     = $('roastingOverhead');
+      const elBagsHelper   = $('bagsHelperText');
+      const elPriceHelper  = $('sellingPriceHelper');
+
+      const elResultsEmpty   = $('resultsEmpty');
+      const elResultsContent = $('resultsContent');
+      const elBatchNameOut   = $('resultBatchName');
+      const elStatusBadge    = $('statusBadge');
+      const elRchMarginBag   = $('rchMarginBag');
+      const elRchMarginPct   = $('rchMarginPct');
+      const elCostPerKg      = $('resCostPerKg');
+      const elCostPerBag     = $('resCostPerBag');
+      const elTotalMargin    = $('resTotalMargin');
+      const elYield          = $('resYield');
+      const elBreakevenItem  = $('resBreakevenItem');
+      const elBreakeven      = $('resBreakeven');
+      const elInterpWhat     = $('interpWhat');
+      const elInterpLever    = $('interpLever');
+      const elInterpAction   = $('interpAction');
+      const elSensBody       = $('sensitivityBody');
+
+      const elBatchCapture   = $('batch-capture');
+      const elScrollCue      = $('scrollCue');
+      const elScrollCueText  = $('scrollCueText');
+      const rootStyle        = document.documentElement.style;
+
+      let scrollCueStep    = 0;
+      let resultsShownOnce = false;
+
+      /* ── Formatters ─────────────────────────────────────────────────────── */
+      const fmtEur = (v, dp = 2) =>
+        '\u20ac' + v.toLocaleString('en-IE', {
+          minimumFractionDigits: dp,
+          maximumFractionDigits: dp
+        });
+
+      const fmtPct  = v => v.toFixed(1) + '%';
+      const fmtNum  = v => Math.round(v).toLocaleString('en-IE');
+
+      const fmtGrams = v => {
+        if (v >= 1000) {
+          const kg = v / 1000;
+          const s  = kg % 1 === 0 ? kg.toFixed(0) : kg.toFixed(2).replace(/\.?0+$/, '');
+          return s + '\u00a0kg';
+        }
+        return fmtNum(v) + '\u00a0g';
+      };
+
+      /* ── Auto bags ──────────────────────────────────────────────────────── */
+      function updateAutoBags() {
+        if (elOverride.checked) return;
+        const size = parseFloat(elBatchSize.value);
+        const loss = parseFloat(elRoastLoss.value);
+        const bw   = parseFloat(elBagWeight.value);
+        if (size > 0 && !isNaN(loss) && loss >= 0 && loss < 100 && bw > 0) {
+          const roasted = size * (1 - loss / 100);
+          const auto    = Math.floor(roasted / bw);
+          elBags.value  = auto > 0 ? auto : '';
+          elBagsHelper.textContent = 'Auto: ' + fmtGrams(roasted) + ' roasted \u00f7 ' +
+            fmtNum(bw) + '\u00a0g = ' + (auto > 0 ? fmtNum(auto) + ' bags' : '0 bags');
+        } else {
+          elBags.value = '';
+          elBagsHelper.textContent = '\u00a0';
+        }
+      }
+
+      /* ── Override toggle ────────────────────────────────────────────────── */
+      elOverride.addEventListener('change', () => {
+        elBags.disabled = !elOverride.checked;
+        if (!elOverride.checked) {
+          updateAutoBags();
+        } else {
+          elBagsHelper.textContent = 'Enter the actual bags you filled.';
+        }
+        calculate();
+      });
+
+      /* ── Price channel toggle ───────────────────────────────────────────── */
+      document.querySelectorAll('input[name="priceType"]').forEach(r => {
+        r.addEventListener('change', () => {
+          elPriceHelper.textContent = r.value === 'wholesale'
+            ? 'What you charge a caf\u00e9 or wholesale buyer.'
+            : 'What a customer pays walking in or buying online.';
+          calculate();
+        });
+      });
+
+      /* ── Core calculation ───────────────────────────────────────────────── */
+      function calculate() {
+        if (!elOverride.checked) updateAutoBags();
+
+        const gbc  = parseFloat(elGBC.value);
+        const loss = parseFloat(elRoastLoss.value);
+        const size = parseFloat(elBatchSize.value);
+        const bw   = parseFloat(elBagWeight.value);
+        const bags = parseInt(elBags.value, 10);
+        const sp   = parseFloat(elPrice.value);
+        const pkg  = parseFloat(elPkgCost.value) || 0;
+        const ovhd = parseFloat(elOverhead.value) || 0;
+
+        const ready =
+          !isNaN(gbc)  && gbc  >  0 &&
+          !isNaN(loss) && loss >= 0 && loss < 100 &&
+          !isNaN(size) && size >  0 &&
+          !isNaN(bw)   && bw   >  0 &&
+          !isNaN(bags) && bags >  0 &&
+          !isNaN(sp)   && sp   >  0;
+
+        if (!ready) {
+          elResultsEmpty.style.display   = '';
+          elResultsContent.style.display = 'none';
+          elBatchCapture.style.display   = 'none';
+          return;
+        }
+
+        /* ── Calculations ─────────────────────────────────────────────────── */
+        const retain       = 1 - loss / 100;
+        const roastedWt    = size * retain;
+        const costPerKgR   = gbc / retain;
+        const beanCpB      = (bw / retain / 1000) * gbc;
+        const overheadCpB  = ovhd > 0 ? ovhd / bags : 0;
+        const totalCpB     = beanCpB + pkg + overheadCpB;
+        const marginBag    = sp - totalCpB;
+        const marginPct    = (marginBag / sp) * 100;
+        const totalMargin  = marginBag * bags;
+
+        const varCpB        = beanCpB + pkg;
+        const canBE         = ovhd > 0 && (sp - varCpB) > 0;
+        const breakevenBags = canBE ? Math.ceil(ovhd / (sp - varCpB)) : null;
+
+        /* ── Status ───────────────────────────────────────────────────────── */
+        let statusLabel, statusClass;
+        if (marginPct >= 60) {
+          statusLabel = 'Healthy'; statusClass = 'status-badge status-healthy';
+        } else if (marginPct >= 40) {
+          statusLabel = 'Tight';   statusClass = 'status-badge status-tight';
+        } else {
+          statusLabel = 'At Risk'; statusClass = 'status-badge status-risk';
+        }
+
+        /* ── Populate ─────────────────────────────────────────────────────── */
+        elResultsEmpty.style.display   = 'none';
+        elResultsContent.style.display = '';
+
+        // Batch name
+        const name = elBatchName.value.trim();
+        if (name) {
+          elBatchNameOut.textContent   = name;
+          elBatchNameOut.style.display = '';
+        } else {
+          elBatchNameOut.style.display = 'none';
+        }
+
+        // Status badge
+        elStatusBadge.textContent = statusLabel;
+        elStatusBadge.className   = statusClass;
+
+        // Primary metric
+        elRchMarginBag.textContent = fmtEur(marginBag);
+        elRchMarginPct.textContent = fmtPct(marginPct) + ' margin on this batch';
+
+        // Grid metrics
+        elCostPerKg.textContent  = fmtEur(costPerKgR) + '\u00a0/ kg';
+        elCostPerBag.textContent = fmtEur(totalCpB);
+
+        elTotalMargin.textContent = fmtEur(totalMargin, 0);
+        elTotalMargin.className   = 'result-value ' + (
+          marginPct >= 60 ? 'val-positive' : marginPct >= 40 ? 'val-tight' : 'val-risk'
+        );
+
+        elYield.textContent = fmtGrams(roastedWt) + ' (' + fmtNum(bags) + ' bags)';
+
+        // Break-even
+        if (ovhd > 0) {
+          elBreakevenItem.style.display = '';
+          if (canBE) {
+            elBreakeven.textContent = fmtNum(breakevenBags) +
+              ' bag' + (breakevenBags !== 1 ? 's' : '');
+            elBreakeven.className = 'result-value';
+          } else {
+            elBreakeven.textContent = 'Not achievable';
+            elBreakeven.className   = 'result-value val-risk';
+          }
+        } else {
+          elBreakevenItem.style.display = 'none';
+        }
+
+        /* ── Interpretation ───────────────────────────────────────────────── */
+        const channel = document.querySelector('input[name="priceType"]:checked').value;
+        let what, lever, action;
+
+        if (marginPct >= 60) {
+          what  = 'Your ' + fmtPct(marginPct) + ' margin is strong for a specialty roaster. ' +
+                  'At ' + fmtEur(marginBag) + ' per bag you have healthy room to absorb ' +
+                  'bean price swings without repricing.';
+          lever = 'The biggest single lever is your selling price. A 10% increase adds ' +
+                  fmtEur(sp * 0.1 * bags, 0) + ' to this batch alone.';
+          action = channel === 'wholesale'
+            ? '\u2192 Consider your retail channel \u2014 the same beans at retail price would likely push margin above 70%.'
+            : '\u2192 Protect this margin: review green bean contracts before the next harvest price movement.';
+        } else if (marginPct >= 40) {
+          what  = 'Your ' + fmtPct(marginPct) + ' margin is workable but tight. A moderate ' +
+                  'rise in green bean prices could push you below 40% \u2014 the level where ' +
+                  'margins become hard to sustain.';
+          lever = pkg > 0
+            ? 'Packaging (' + fmtEur(pkg) + '/bag) and bean cost are the fastest levers. ' +
+              'Cutting packaging by \u20ac0.20 adds ' + fmtEur(0.2 * bags, 0) + ' to this batch.'
+            : 'Bean cost is your primary lever at this margin level.';
+          action = channel === 'wholesale'
+            ? '\u2192 Review whether your wholesale price reflects your current bean cost \u2014 a small surcharge for smaller orders is standard.'
+            : '\u2192 A \u20ac1\u2013\u20ac2 price increase per bag would move this into healthy territory.';
+        } else {
+          what  = 'At ' + fmtPct(marginPct) + ', this margin is below the sustainable range ' +
+                  'for specialty roasting (target: 55\u201365%). Any cost increase or pricing ' +
+                  'pressure will hurt.';
+          lever = 'Your selling price (' + fmtEur(sp) + '/bag) or bean cost (' + fmtEur(gbc) +
+                  '/kg) need to move. A \u20ac1 price increase per bag adds \u20ac' + fmtNum(bags) +
+                  ' to this batch immediately.';
+          action = '\u2192 Before the next batch: model a price increase or identify a comparable bean at lower cost. Do not grow volume at this margin.';
+        }
+
+        elInterpWhat.textContent   = what;
+        elInterpLever.textContent  = lever;
+        elInterpAction.textContent = action;
+
+        /* ── Sensitivity table ────────────────────────────────────────────── */
+        const multipliers = [1, 1.1, 1.2, 1.3];
+        const labels      = ['Current', '+10%', '+20%', '+30%'];
+        elSensBody.innerHTML = '';
+
+        multipliers.forEach((m, i) => {
+          const adjGbc    = gbc * m;
+          const adjBCpB   = (bw / retain / 1000) * adjGbc;
+          const adjCpB    = adjBCpB + pkg + overheadCpB;
+          const adjMPct   = ((sp - adjCpB) / sp) * 100;
+          const delta     = adjMPct - marginPct;
+
+          const tr = document.createElement('tr');
+          if (i === 0) tr.classList.add('row-current');
+
+          const tdLabel = document.createElement('td');
+          tdLabel.textContent = labels[i] + ' (' + fmtEur(adjGbc) + '/kg)';
+
+          const tdPct = document.createElement('td');
+          tdPct.textContent = fmtPct(adjMPct);
+
+          const tdDelta = document.createElement('td');
+          if (i === 0) {
+            tdDelta.textContent = '\u2014';
+          } else {
+            const sign = delta > 0 ? '+' : '';
+            tdDelta.textContent = sign + delta.toFixed(1) + '\u00a0pp';
+            tdDelta.className   = delta < 0 ? 'delta-neg' : 'delta-pos';
+          }
+
+          tr.appendChild(tdLabel);
+          tr.appendChild(tdPct);
+          tr.appendChild(tdDelta);
+          elSensBody.appendChild(tr);
+        });
+
+        /* ── Show CTA + scroll cue on first result ────────────────────────── */
+        elBatchCapture.style.display = '';
+        if (!resultsShownOnce) {
+          resultsShownOnce = true;
+          showScrollCue('\u2193 Results below');
+        }
+      }
+
+      /* ── Input listeners (input + change covers keyboard, paste, spinners) ── */
+      [elBatchName, elGBC, elRoastLoss, elBatchSize, elBagWeight,
+       elPrice, elPkgCost, elOverhead].forEach(el => {
+        el.addEventListener('input',  calculate);
+        el.addEventListener('change', calculate);
+      });
+      elBags.addEventListener('input',  calculate);
+      elBags.addEventListener('change', calculate);
+
+      /* ── Calculate button ───────────────────────────────────────────────── */
+      const elCalcBtn = document.getElementById('calcBtn');
+      const elCalcCue = document.getElementById('calcResultsCue');
+      elCalcBtn.addEventListener('click', () => {
+        calculate();
+        // On narrow screens the results are below — show cue and scroll
+        if (window.innerWidth < 900) {
+          elCalcCue.style.display = 'block';
+          const panel = document.getElementById('resultsPanel');
+          if (panel) {
+            setTimeout(() => {
+              panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 80);
+          }
+        }
+      });
+
+      /* ── Scroll cue ─────────────────────────────────────────────────────── */
+      function showScrollCue(text) {
+        if (!elScrollCue) return;
+        scrollCueStep = 0;
+        elScrollCueText.textContent = text || '\u2193 Results below';
+        elScrollCue.style.display = 'flex';
+        document.body.classList.add('pn-scroll-padding');
+        const h = elScrollCue.getBoundingClientRect().height || 0;
+        rootStyle.setProperty('--pn-sticky-offset', `${h + 16}px`);
+      }
+
+      function hideScrollCue() {
+        if (!elScrollCue) return;
+        elScrollCue.style.display = 'none';
+        document.body.classList.remove('pn-scroll-padding');
+        rootStyle.setProperty('--pn-sticky-offset', '0px');
+      }
+
+      elScrollCue && elScrollCue.addEventListener('click', () => {
+        if (scrollCueStep === 0) {
+          const panel = $('resultsPanel');
+          panel && panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          scrollCueStep = 1;
+          elScrollCueText.textContent = '\u2193 Get the multi-batch tracker';
+        } else {
+          const cta = $('batch-capture');
+          if (cta) {
+            const top = cta.getBoundingClientRect().top + window.scrollY - 70;
+            window.scrollTo({ top, behavior: 'smooth' });
+          }
+          hideScrollCue();
+        }
+      });
+
+      /* ── Init ───────────────────────────────────────────────────────────── */
+      calculate();
+    </script>
+  </body>
+</html>
