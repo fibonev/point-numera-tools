@@ -66,6 +66,16 @@
 - Body: 16px, line-height 1.7
 - Eyebrow labels: 11–12px, uppercase, letter-spacing 0.1em
 
+### Punctuation
+
+- Do not use the `&mdash;` HTML entity anywhere in the codebase.
+- Use a comma, colon, or plain hyphen (`-`) instead, chosen by context:
+  - Before a clarification or example → comma
+  - Before a consequence or elaboration → colon
+  - In a parenthetical aside → comma or parentheses
+  - As a separator in a label or heading → colon
+- Never introduce a literal em dash character either.
+
 ---
 
 ## 4. Spacing System

@@ -98,6 +98,36 @@
         pointer-events: auto;
       }
 
+      /* ── Filter tabs ─────────────────────────────────────────────────── */
+      .filter-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: var(--space-md);
+      }
+      .filter-tab {
+        padding: 7px 18px;
+        border-radius: 999px;
+        border: 1px solid var(--color-border);
+        background: transparent;
+        color: var(--color-muted);
+        font-family: inherit;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+        line-height: 1;
+      }
+      .filter-tab:hover {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+      }
+      .filter-tab.active {
+        background: var(--color-primary);
+        color: #F4ECBD;
+        border-color: var(--color-primary);
+      }
+
       /* ── CTA section ─────────────────────────────────────────────────── */
       .cta-section {
         background: var(--color-primary);
@@ -234,9 +264,15 @@
 
       <!-- Tools -->
       <section class="container section">
+        <div class="filter-tabs" role="tablist" aria-label="Filter tools by category">
+          <button class="filter-tab active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="filter-tab" data-filter="restaurant" role="tab" aria-selected="false">Restaurant &amp; Café</button>
+          <button class="filter-tab" data-filter="general" role="tab" aria-selected="false">General</button>
+        </div>
+
         <div class="card-grid">
           <!-- Live -->
-          <article class="card tool-card">
+          <article class="card tool-card" data-tags="restaurant">
             <h3>Dish Profitability Check</h3>
             <p>
               Find out which dishes are making you money, and which ones aren't.
@@ -248,8 +284,16 @@
             >
           </article>
 
+          <article class="card tool-card" data-tags="restaurant">
+            <h3>Roast Batch Checker</h3>
+            <p>
+              Know your real margin before the next roast. Enter green bean cost, batch size, and selling price — get margin per bag, break-even, and a sensitivity check on bean price moves.
+            </p>
+            <a class="btn btn-primary" href="./tools/roast-batch-checker/">Open tool</a>
+          </article>
+
           <!-- Coming soon -->
-          <article class="card tool-card coming-soon">
+          <article class="card tool-card coming-soon" data-tags="general">
             <div class="coming-soon-badge">Coming soon</div>
             <h3>Cash-Flow Check</h3>
             <p>Quickly map runway, burn, and collection timing.</p>
@@ -258,7 +302,7 @@
             >
           </article>
 
-          <article class="card tool-card coming-soon">
+          <article class="card tool-card coming-soon" data-tags="general">
             <div class="coming-soon-badge">Coming soon</div>
             <h3>Pricing Calculator</h3>
             <p>Calibrate packages, margins, and revenue goals with clarity.</p>
@@ -267,7 +311,7 @@
             >
           </article>
 
-          <article class="card tool-card coming-soon">
+          <article class="card tool-card coming-soon" data-tags="general">
             <div class="coming-soon-badge">Coming soon</div>
             <h3>ROI Quick Check</h3>
             <p>Test ROI scenarios for product bets or marketing spend.</p>
@@ -314,7 +358,7 @@
     <footer>
       <div class="container">
         <span
-          >&copy; Point Numera <span data-year></span> &mdash;
+          >&copy; Point Numera <span data-year></span>,
           <a
             href="https://www.pointnumera.com"
             target="_blank"
@@ -327,5 +371,32 @@
     </footer>
 
     <script src="./tools/shared/app.js"></script>
+    <script>
+      (function () {
+        var tabs  = document.querySelectorAll('.filter-tab');
+        var cards = document.querySelectorAll('.card-grid .card.tool-card');
+
+        tabs.forEach(function (tab) {
+          tab.addEventListener('click', function () {
+            tabs.forEach(function (t) {
+              t.classList.remove('active');
+              t.setAttribute('aria-selected', 'false');
+            });
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+
+            var filter = tab.getAttribute('data-filter');
+            cards.forEach(function (card) {
+              if (filter === 'all') {
+                card.style.display = '';
+              } else {
+                var tags = (card.getAttribute('data-tags') || '').split(' ');
+                card.style.display = tags.indexOf(filter) !== -1 ? '' : 'none';
+              }
+            });
+          });
+        });
+      })();
+    </script>
   </body>
 </html>

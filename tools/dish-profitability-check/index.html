@@ -379,9 +379,6 @@
       }
 
       /* ── CTA ──────────────────────────────────────────────────────────── */
-      #dish-capture {
-        display: none;
-      }
 
       /* ── Ingredient field wrappers (per-field labels on mobile) ────────── */
       .ing-field-wrap {
@@ -477,6 +474,23 @@
         color: var(--color-muted);
         margin-top: var(--space-sm);
         line-height: 1.5;
+      }
+
+      /* ── Privacy trust badge ────────────────────────────────────────── */
+      .privacy-note {
+        margin: var(--space-xs) 0 var(--space-sm);
+      }
+      .privacy-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        color: var(--color-muted);
+        background: var(--color-surface-2);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-lg);
+        padding: 4px 12px;
+        letter-spacing: 0.01em;
       }
 
       /* ── Misc ─────────────────────────────────────────────────────────── */
@@ -816,6 +830,9 @@
     <main class="page-wrap">
       <section class="container hero">
         <h1>Which dish on your menu is quietly losing money?</h1>
+        <p class="privacy-note">
+          <span class="privacy-badge">&#128274; No data stored, runs entirely in your browser</span>
+        </p>
         <p class="subtitle">
           Know your real margin before the next price increase.
         </p>
@@ -1873,7 +1890,6 @@
 
         resultsEl.style.display = "block";
         resultsContent.classList.add("visible");
-        document.getElementById("dish-capture").style.display = "block";
 
         showScrollCue("↓ Results below");
       });
