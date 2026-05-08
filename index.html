@@ -9,17 +9,11 @@
     />
     <!-- Build v2: Framer-aligned pass -->
     <title>Point Numera Tools</title>
-    <meta
-      property="og:image"
-      content="https://tools.pointnumera.com/tools/shared/og-image.png"
-    />
+    <meta property="og:image" content="https://tools.pointnumera.com/tools/shared/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:image"
-      content="https://tools.pointnumera.com/tools/shared/og-image.png"
-    />
+    <meta name="twitter:image" content="https://tools.pointnumera.com/tools/shared/og-image.png" />
     <link rel="stylesheet" href="./tools/shared/base.css" />
     <link rel="stylesheet" href="./tools/shared/ui.css" />
     <style>
@@ -96,7 +90,7 @@
         letter-spacing: 0.08em;
         color: var(--color-muted);
         border: 1px solid var(--color-border);
-        border-radius: var(--r-pill);
+        border-radius: var(--r-md);
         padding: 2px 10px;
         margin-bottom: var(--space-sm);
       }
@@ -113,7 +107,7 @@
       }
       .filter-tab {
         padding: 7px 18px;
-        border-radius: 999px;
+        border-radius: var(--r-md);
         border: 1px solid var(--color-border);
         background: transparent;
         color: var(--color-muted);
@@ -121,10 +115,7 @@
         font-size: 0.88rem;
         font-weight: 600;
         cursor: pointer;
-        transition:
-          background 0.15s,
-          color 0.15s,
-          border-color 0.15s;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
         line-height: 1;
       }
       .filter-tab:hover {
@@ -133,7 +124,7 @@
       }
       .filter-tab.active {
         background: var(--color-primary);
-        color: #f4ecbd;
+        color: #F4ECBD;
         border-color: var(--color-primary);
       }
 
@@ -197,25 +188,8 @@
     </style>
   </head>
   <body>
-    <header class="top-nav">
-      <div class="container">
-        <a class="brand" href="./">
-          <img src="./tools/shared/logo.svg" alt="Point Numera logo" />
-        </a>
-        <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
-          <span></span><span></span><span></span>
-        </button>
-        <nav class="nav-links">
-          <a class="nav-link active" href="./">Tools Hub</a>
-          <a class="nav-link" href="https://www.pointnumera.com/#contact"
-            >Contact ↗</a
-          >
-          <a class="nav-link" href="https://www.pointnumera.com"
-            >Back to site ↗</a
-          >
-        </nav>
-      </div>
-    </header>
+    <div id="pn-nav-root" data-logo="./tools/shared/logo.svg"></div>
+    <script src="./tools/shared/nav.js"></script>
 
     <main>
       <!-- Hero -->
@@ -273,35 +247,10 @@
 
       <!-- Tools -->
       <section class="container section">
-        <div
-          class="filter-tabs"
-          role="tablist"
-          aria-label="Filter tools by category"
-        >
-          <button
-            class="filter-tab active"
-            data-filter="all"
-            role="tab"
-            aria-selected="true"
-          >
-            All
-          </button>
-          <button
-            class="filter-tab"
-            data-filter="restaurant"
-            role="tab"
-            aria-selected="false"
-          >
-            Restaurant &amp; Café
-          </button>
-          <button
-            class="filter-tab"
-            data-filter="general"
-            role="tab"
-            aria-selected="false"
-          >
-            General
-          </button>
+        <div class="filter-tabs" role="tablist" aria-label="Filter tools by category">
+          <button class="filter-tab active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="filter-tab" data-filter="restaurant" role="tab" aria-selected="false">Restaurant &amp; Café</button>
+          <button class="filter-tab" data-filter="general" role="tab" aria-selected="false">General</button>
         </div>
 
         <div class="card-grid">
@@ -321,13 +270,9 @@
           <article class="card tool-card" data-tags="restaurant">
             <h3>Roast Batch Checker</h3>
             <p>
-              Know your real margin before the next roast. Enter green bean
-              cost, batch size, and selling price. Get margin per bag,
-              break-even, and a sensitivity check on bean price moves.
+              Know your real margin before the next roast. Enter green bean cost, batch size, and selling price — get margin per bag, break-even, and a sensitivity check on bean price moves.
             </p>
-            <a class="btn btn-primary" href="./tools/roast-batch-checker/"
-              >Open tool</a
-            >
+            <a class="btn btn-primary" href="./tools/roast-batch-checker/">Open tool</a>
           </article>
 
           <!-- Coming soon -->
@@ -411,25 +356,25 @@
     <script src="./tools/shared/app.js"></script>
     <script>
       (function () {
-        var tabs = document.querySelectorAll(".filter-tab");
-        var cards = document.querySelectorAll(".card-grid .card.tool-card");
+        var tabs  = document.querySelectorAll('.filter-tab');
+        var cards = document.querySelectorAll('.card-grid .card.tool-card');
 
         tabs.forEach(function (tab) {
-          tab.addEventListener("click", function () {
+          tab.addEventListener('click', function () {
             tabs.forEach(function (t) {
-              t.classList.remove("active");
-              t.setAttribute("aria-selected", "false");
+              t.classList.remove('active');
+              t.setAttribute('aria-selected', 'false');
             });
-            tab.classList.add("active");
-            tab.setAttribute("aria-selected", "true");
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
 
-            var filter = tab.getAttribute("data-filter");
+            var filter = tab.getAttribute('data-filter');
             cards.forEach(function (card) {
-              if (filter === "all") {
-                card.style.display = "";
+              if (filter === 'all') {
+                card.style.display = '';
               } else {
-                var tags = (card.getAttribute("data-tags") || "").split(" ");
-                card.style.display = tags.indexOf(filter) !== -1 ? "" : "none";
+                var tags = (card.getAttribute('data-tags') || '').split(' ');
+                card.style.display = tags.indexOf(filter) !== -1 ? '' : 'none';
               }
             });
           });

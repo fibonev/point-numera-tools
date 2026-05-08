@@ -49,6 +49,8 @@
   padding: 10px 0;
   color: rgba(255, 255, 255, 0.9);
   border-bottom: 2px solid transparent;
+  font-family: 'PT Sans', system-ui, sans-serif;
+  font-size: 14px;
   font-weight: 600;
   transition: color 0.2s ease, border-color 0.2s ease;
 }

@@ -186,7 +186,7 @@
         border: 1px solid rgba(255,255,255,0.4);
         color: #f0ede4;
         background: transparent;
-        border-radius: var(--r-pill);
+        border-radius: var(--r-md);
         padding: 7px 18px;
         font-size: 0.85rem;
         font-family: inherit;
@@ -288,27 +288,8 @@
     </style>
   </head>
   <body>
-    <header class="top-nav">
-      <div class="container">
-        <a class="brand" href="/">
-          <img src="../shared/logo.svg" alt="Point Numera logo" />
-        </a>
-        <button class="nav-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
-        <nav class="nav-links">
-          <a class="nav-link" data-nav href="/">Tools Hub</a>
-          <a class="nav-link" href="https://www.pointnumera.com">Back to site ↗</a>
-          <a class="nav-link" data-nav href="./"
-            >ROI Quick Check</a
-          >
-        </nav>
-        <a
-          class="btn btn-nav-cta"
-          href="https://cal.com/pointnumera"
-          target="_blank"
-          rel="noopener noreferrer"
-        >Get in touch</a>
-      </div>
-    </header>
+    <div id="pn-nav-root" data-logo="../shared/logo.svg"></div>
+    <script src="../shared/nav.js"></script>
 
     <main class="page-wrap">
       <section class="container hero">

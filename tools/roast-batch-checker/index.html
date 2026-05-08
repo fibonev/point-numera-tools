@@ -101,7 +101,7 @@
         display: inline-flex;
         background: var(--color-surface-2);
         border: 1px solid var(--color-border);
-        border-radius: var(--r-pill);
+        border-radius: var(--r-md);
         padding: 3px;
         gap: 2px;
       }
@@ -114,7 +114,7 @@
         font-weight: 600;
         cursor: pointer;
         color: var(--color-muted);
-        border-radius: var(--r-pill);
+        border-radius: var(--r-md);
         transition: background 0.18s, color 0.18s;
         user-select: none;
         margin: 0;
@@ -356,7 +356,7 @@
         background: #ffffff;
         border: 1px solid var(--color-primary);
         color: var(--color-primary);
-        border-radius: var(--r-pill);
+        border-radius: var(--r-md);
         padding: 10px 20px;
         font-size: 0.95rem;
         font-weight: 600;
@@ -424,7 +424,7 @@
         border: 1px solid rgba(255, 255, 255, 0.4);
         color: #f0ede4;
         background: transparent;
-        border-radius: var(--r-pill);
+        border-radius: var(--r-md);
         padding: 7px 18px;
         font-size: 0.85rem;
         font-family: inherit;
@@ -601,26 +601,8 @@
   <body>
 
     <!-- ── Navigation ──────────────────────────────────────────────────────── -->
-    <header class="top-nav">
-      <div class="container">
-        <a class="brand" href="/">
-          <img src="../shared/logo.svg" alt="Point Numera logo" />
-        </a>
-        <button
-          class="nav-toggle"
-          aria-label="Open menu"
-          aria-expanded="false"
-        >
-          <span></span><span></span><span></span>
-        </button>
-        <nav class="nav-links">
-          <a class="nav-link" data-nav href="/">Tools Hub</a>
-          <a class="nav-link" data-nav href="./">Roast Batch Checker</a>
-          <a class="nav-link" href="https://www.pointnumera.com/#contact">Contact ↗</a>
-          <a class="nav-link" href="https://www.pointnumera.com">Back to site ↗</a>
-        </nav>
-      </div>
-    </header>
+    <div id="pn-nav-root" data-logo="../shared/logo.svg"></div>
+    <script src="../shared/nav.js"></script>
 
     <main class="page-wrap">
 
