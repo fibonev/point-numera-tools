@@ -6,7 +6,7 @@
     <title>Roast Batch Profitability Checker | Point Numera</title>
     <meta
       name="description"
-      content="Enter your green bean cost, batch size, and selling price to see exactly what margin each roast batch produces — and whether it's healthy."
+      content="Calculate your real roast batch margin - including white label accounts. Enter bean cost, batch size, packaging, and selling price. Results in under a minute."
     />
     <link
       rel="canonical"
@@ -18,7 +18,7 @@
     />
     <meta
       property="og:description"
-      content="Enter your green bean cost, batch size, and selling price to see exactly what margin each roast batch produces — and whether it's healthy."
+      content="Calculate your real roast batch margin - including white label accounts. Enter bean cost, batch size, packaging, and selling price. Results in under a minute."
     />
     <meta property="og:type" content="website" />
     <meta
@@ -392,6 +392,38 @@
         line-height: 1.5;
       }
 
+      .optional-tag {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--color-muted);
+        background: var(--color-surface-2);
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-sm);
+        padding: 1px 5px;
+        margin-left: 5px;
+        vertical-align: middle;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      /* ── WL results section ───────────────────────────────────────────────── */
+      .wl-results-section {
+        margin-top: var(--space-md);
+        padding-top: var(--space-md);
+        border-top: 1px solid var(--color-border);
+      }
+      .wl-section-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-muted);
+        margin-bottom: var(--space-sm);
+      }
+      .wl-net-positive { color: #1a7a3a !important; }
+      .wl-net-negative { color: #b00020 !important; }
+
       /* ── Misc ────────────────────────────────────────────────────────────── */
       .section-compact { padding: var(--space-md) 0; }
       .subtitle { font-size: 1.05rem; color: var(--color-muted); max-width: 640px; }
@@ -613,12 +645,15 @@
           <span class="privacy-badge">&#128274; No data stored, runs entirely in your browser</span>
         </p>
         <p class="subtitle">
-          Know your real margin before you roast the next kilo.
+          Know your real margin before you roast the next kilo: Including white label accounts.
         </p>
         <p>
           Most roasters find at least one product running
           <span style="color: #0e4f47">10+ points</span> below a healthy
           margin. This tool shows you exactly where you stand.
+        </p>
+        <p>
+          White label batches are the most common place margins disappear unnoticed.
         </p>
         <p class="friction-line">
           No signup. Enter your batch details below. Results update as you type.
@@ -677,7 +712,7 @@
             </div>
 
             <div class="input-group">
-              <label for="batchSize">Batch size (grams of green beans)</label>
+              <label for="batchSize">Batch size (green beans)</label>
               <div class="input-suffix-wrap">
                 <input
                   id="batchSize"
@@ -688,6 +723,7 @@
                 />
                 <span class="input-suffix">g</span>
               </div>
+              <div class="helper-text" id="batchSizeHelper">&nbsp;</div>
             </div>
 
             <div class="input-group">
@@ -732,7 +768,7 @@
             <p class="form-section-label">Pricing &amp; Overhead</p>
 
             <div class="input-group">
-              <label>Price channel</label>
+<label>Price channel</label>
               <div class="pill-toggle">
                 <input
                   type="radio"
@@ -749,6 +785,13 @@
                   value="wholesale"
                 />
                 <label for="priceWholesale">Wholesale</label>
+                <input
+                  type="radio"
+                  name="priceType"
+                  id="priceWL"
+                  value="whitelabel"
+                />
+                <label for="priceWL">White Label</label>
               </div>
             </div>
 
@@ -806,8 +849,49 @@
               </div>
             </div>
 
+            <!-- White label extra fields (shown when WL channel selected) -->
+            <div id="wlExtraFields" style="display:none">
+              <hr class="form-divider" />
+              <p class="form-section-label">White label &mdash; additional costs</p>
+
+              <div class="input-group">
+                <label for="wlPkgDiff">Additional packaging cost per bag</label>
+                <div class="input-prefix-wrap">
+                  <span class="input-prefix">&euro;</span>
+                  <input
+                    id="wlPkgDiff"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div class="helper-text">Additional cost per bag vs. your standard packaging — custom labels, different bag spec, or extra sealing time</div>
+              </div>
+
+              <hr class="form-divider" />
+              <p class="form-section-label">Compare against own-brand <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></p>
+
+              <div class="input-group">
+                <label for="wlDisplacement">Your retail or wholesale price per bag</label>
+                <div class="input-prefix-wrap">
+                  <span class="input-prefix">&euro;</span>
+                  <input
+                    id="wlDisplacement"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div class="helper-text">The price you&rsquo;d charge for this same coffee as your own product. The tool calculates the own-brand margin using your cost inputs above and shows whether white label earns more or less than keeping this slot for yourself.</div>
+              </div>
+            </div><!-- /wlExtraFields -->
 
           </div><!-- /right card -->
+
 
           <!-- RESULTS: full-width below -->
           <div class="card results-card" id="resultsPanel">
@@ -895,6 +979,34 @@
                   <tbody id="sensitivityBody"></tbody>
                 </table>
               </div>
+
+              <!-- WHITE LABEL: additional results (hidden until WL mode) -->
+              <div class="wl-results-section" id="wlResultsSection" style="display:none">
+                <div class="wl-section-label">White label analysis</div>
+                <p style="font-size:0.88rem;color:var(--color-muted);margin:0 0 var(--space-sm)">How this white label batch compares to using the same roaster slot for your own product. The comparison only applies if you enter an own-brand margin below.</p>
+                <div class="result-grid" style="margin-bottom:var(--space-md)">
+                  <div class="result-item">
+                    <h4>Effective WL margin per bag</h4>
+                    <div id="wlEffectiveMargEur" class="result-value">—</div>
+                  </div>
+                  <div class="result-item">
+                    <h4>Effective WL margin %</h4>
+                    <div id="wlEffectiveMargPct" class="result-value">—</div>
+                  </div>
+                  <div class="result-item">
+                    <h4>Opportunity cost of this slot</h4>
+                    <div id="wlOpptyCost" class="result-value">—</div>
+                  </div>
+                </div>
+                <div class="result-cost-highlight">
+                  <div id="wlNetMarginLabel" class="rch-label">Net margin vs. own-brand (per kg)</div>
+                  <div id="wlNetMarginVal" class="rch-value">—</div>
+                  <div id="wlNetMarginSub" class="rch-sub"></div>
+                </div>
+                <div class="interpretation-block" style="margin-top:var(--space-sm)">
+                  <p id="wlInterpText"></p>
+                </div>
+              </div><!-- /wl results section -->
 
               <div class="export-buttons" style="display:flex;gap:var(--space-sm);flex-wrap:wrap;margin-bottom:var(--space-sm);">
                 <button type="button" id="exportPdfBtn" class="btn btn-ghost">Save as PDF</button>
@@ -1061,6 +1173,18 @@
               transmitted unless you choose to submit your email.
             </p>
           </div>
+          <div class="faq-item">
+            <strong>Does this tool work for white label coffee pricing?</strong>
+            <p>
+              Yes. The white label mode adds two inputs the standard batch calculation misses: a packaging differential (custom labels, different bag spec) and a scheduling displacement cost. The margin per kg you give up when a production slot goes to a white label client instead of your own product. This gives you the real net margin on a white label account before you commit to it.
+            </p>
+          </div>
+          <div class="faq-item">
+            <strong>How is white label batch costing different from standard batch costing?</strong>
+            <p>
+              Standard batch costing assumes you're selling your own product at your own price. White label adds hidden costs: custom packaging, stock you hold for the client, profile setup time, and schedule friction. The tool surfaces all of these so you can set a floor price that actually works.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -1139,6 +1263,22 @@
               "@type": "Answer",
               "text": "No. All calculations run in your browser. Nothing is saved or transmitted unless you choose to submit your email."
             }
+          },
+          {
+            "@type": "Question",
+            "name": "Does this tool work for white label coffee pricing?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. The white label mode adds two inputs the standard batch calculation misses: a packaging differential (custom labels, different bag spec) and a scheduling displacement cost. The margin per kg you give up when a production slot goes to a white label client instead of your own product. This gives you the real net margin on a white label account before you commit to it."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How is white label batch costing different from standard batch costing?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Standard batch costing assumes you're selling your own product at your own price. White label adds hidden costs: custom packaging, stock you hold for the client, profile setup time, and schedule friction. The tool surfaces all of these so you can set a floor price that actually works."
+            }
           }
         ]
       }
@@ -1179,9 +1319,22 @@
       const elSensBody       = $('sensitivityBody');
 
       const elBatchCapture   = $('batch-capture');
+      const elBatchSizeHelper = $('batchSizeHelper');
       const elScrollCue      = $('scrollCue');
       const elScrollCueText  = $('scrollCueText');
       const rootStyle        = document.documentElement.style;
+
+      /* ── White Label DOM refs ───────────────────────────────────────────── */
+      const elWLInputsCard       = $('wlExtraFields');
+      const elWLResultsSection   = $('wlResultsSection');
+      const elWLPkgDiff          = $('wlPkgDiff');
+      const elWLDisplacement     = $('wlDisplacement');
+      const elWLEffectiveMargEur = $('wlEffectiveMargEur');
+      const elWLEffectiveMargPct = $('wlEffectiveMargPct');
+      const elWLOpptyCost        = $('wlOpptyCost');
+      const elWLNetMarginVal     = $('wlNetMarginVal');
+      const elWLNetMarginSub     = $('wlNetMarginSub');
+      const elWLInterpText       = $('wlInterpText');
 
       let scrollCueStep    = 0;
       let resultsShownOnce = false;
@@ -1221,6 +1374,12 @@
           elBags.value = '';
           elBagsHelper.textContent = '\u00a0';
         }
+        if (size > 0 && elBatchSizeHelper) {
+          const kg = size / 1000;
+          elBatchSizeHelper.textContent = '= ' + (kg % 1 === 0 ? kg.toFixed(0) : kg.toFixed(2).replace(/\.?0+$/, '')) + '\u00a0kg of green beans';
+        } else if (elBatchSizeHelper) {
+          elBatchSizeHelper.textContent = '\u00a0';
+        }
       }
 
       /* ── Override toggle ────────────────────────────────────────────────── */
@@ -1234,12 +1393,23 @@
         calculate();
       });
 
+      /* ── White Label mode ──────────────────────────────────────────────── */
+      function isWLMode() {
+        const el = document.querySelector('input[name="priceType"]:checked');
+        return !!(el && el.value === 'whitelabel');
+      }
+
       /* ── Price channel toggle ───────────────────────────────────────────── */
       document.querySelectorAll('input[name="priceType"]').forEach(r => {
         r.addEventListener('change', () => {
-          elPriceHelper.textContent = r.value === 'wholesale'
-            ? 'What you charge a caf\u00e9 or wholesale buyer.'
-            : 'What a customer pays walking in or buying online.';
+          if (r.value === 'wholesale') {
+            elPriceHelper.textContent = 'What you charge a caf\u00e9 or wholesale buyer.';
+          } else if (r.value === 'whitelabel') {
+            elPriceHelper.textContent = 'What you charge the white label client per bag.';
+          } else {
+            elPriceHelper.textContent = 'What a customer pays walking in or buying online.';
+          }
+          elWLInputsCard.style.display = isWLMode() ? '' : 'none';
           calculate();
         });
       });
@@ -1444,7 +1614,71 @@
           overheadLegend.style.display = 'none';
         }
 
-        /* ── Show scroll cue on first result ─────────────────────────────── */
+        /* WL calculations */
+        if (isWLMode()) {
+          const wlPkgDiff     = parseFloat(elWLPkgDiff.value)     || 0;
+          const ownBrandPrice = parseFloat(elWLDisplacement.value) || 0;
+          const batchKg       = roastedWt / 1000;
+
+          const wlPkgDiffPB  = wlPkgDiff;
+          const wlEffMargBag = marginBag - wlPkgDiffPB;
+          const wlEffMargPct = (wlEffMargBag / sp) * 100;
+          const wlEffPerKg   = batchKg > 0 ? (wlEffMargBag * bags) / batchKg : 0;
+
+          // Derive own-brand margin from the entered retail/wholesale price
+          let wlDisplace = 0;
+          let ownBrandMargBag = 0;
+          if (ownBrandPrice > 0) {
+            ownBrandMargBag = ownBrandPrice - (beanCpB + pkg + overheadCpB);
+            wlDisplace      = batchKg > 0 ? (ownBrandMargBag * bags) / batchKg : 0;
+          }
+
+          const wlOppTotal = ownBrandPrice > 0 ? ownBrandMargBag * bags : 0;
+          const wlNetPerKg = wlEffPerKg - wlDisplace;
+
+          elWLResultsSection.style.display = '';
+
+          document.getElementById('wlNetMarginLabel').textContent =
+            ownBrandPrice > 0 ? 'Net margin vs. own-brand (per kg)' : 'Effective WL margin (per kg)';
+
+          elWLEffectiveMargEur.textContent = fmtEur(wlEffMargBag) + ' / bag';
+          elWLEffectiveMargEur.className   = 'result-value ' + (
+            wlEffMargPct >= 60 ? 'val-positive' : wlEffMargPct >= 40 ? 'val-tight' : 'val-risk'
+          );
+          elWLEffectiveMargPct.textContent = fmtPct(wlEffMargPct);
+          elWLEffectiveMargPct.className   = 'result-value ' + (
+            wlEffMargPct >= 60 ? 'val-positive' : wlEffMargPct >= 40 ? 'val-tight' : 'val-risk'
+          );
+          elWLOpptyCost.textContent = ownBrandPrice > 0
+            ? fmtEur(wlOppTotal, 0) + ' total'
+            : '\u2014';
+
+          elWLNetMarginVal.textContent = fmtEur(ownBrandPrice > 0 ? wlNetPerKg : wlEffPerKg) + ' / kg';
+          elWLNetMarginVal.className   = 'rch-value ' + (
+            (ownBrandPrice > 0 ? wlNetPerKg : wlEffPerKg) >= 0 ? 'wl-net-positive' : 'wl-net-negative'
+          );
+          elWLNetMarginSub.textContent = ownBrandPrice > 0
+            ? (wlNetPerKg >= 0
+                ? fmtEur(wlNetPerKg) + '/kg above own-brand margin at ' + fmtEur(ownBrandPrice) + '/bag (' + fmtEur(ownBrandMargBag) + '/bag margin)'
+                : fmtEur(Math.abs(wlNetPerKg)) + '/kg below own-brand margin at ' + fmtEur(ownBrandPrice) + '/bag (' + fmtEur(ownBrandMargBag) + '/bag margin)')
+            : 'Enter your retail or wholesale price above to compare';
+
+          let wlInterp;
+          if (ownBrandPrice <= 0) {
+            wlInterp = wlEffMargPct >= 55
+              ? 'Effective white label margin is ' + fmtPct(wlEffMargPct) + ' (' + fmtEur(wlEffPerKg) + '/kg) \u2014 healthy for a white label account. Enter your retail or wholesale price above to see whether this slot earns more as white label or own-brand.'
+              : 'Effective white label margin is ' + fmtPct(wlEffMargPct) + '. Enter your retail or wholesale price above to compare this white label deal against selling your own product.';
+          } else if (wlNetPerKg >= 0) {
+            wlInterp = 'This batch earns ' + fmtEur(wlNetPerKg) + '/kg more than selling own-brand at ' + fmtEur(ownBrandPrice) + '/bag \u2014 the slot is justified.';
+          } else {
+            wlInterp = 'This batch earns ' + fmtEur(Math.abs(wlNetPerKg)) + '/kg less than selling own-brand at ' + fmtEur(ownBrandPrice) + '/bag. Running your own product in this slot would be more profitable.';
+          }
+          elWLInterpText.textContent = wlInterp;
+
+        } else {
+          elWLResultsSection.style.display = 'none';
+        }
+
         if (!resultsShownOnce) {
           resultsShownOnce = true;
           showScrollCue('\u2193 Results below');
@@ -1459,6 +1693,11 @@
       });
       elBags.addEventListener('input',  calculate);
       elBags.addEventListener('change', calculate);
+
+      [elWLPkgDiff, elWLDisplacement].forEach(el => {
+        el.addEventListener('input',  calculate);
+        el.addEventListener('change', calculate);
+      });
 
 
       /* ── Scroll cue ─────────────────────────────────────────────────────── */
