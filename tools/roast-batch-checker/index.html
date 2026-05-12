@@ -983,23 +983,27 @@
               <!-- WHITE LABEL: additional results (hidden until WL mode) -->
               <div class="wl-results-section" id="wlResultsSection" style="display:none">
                 <div class="wl-section-label">White label analysis</div>
-                <p style="font-size:0.88rem;color:var(--color-muted);margin:0 0 var(--space-sm)">How this white label batch compares to using the same roaster slot for your own product. The comparison only applies if you enter an own-brand margin below.</p>
+                <p style="font-size:0.88rem;color:var(--color-muted);margin:0 0 var(--space-sm)">What this roasting slot earns as white label vs. your own product. Enter your retail or wholesale price above to compare.</p>
                 <div class="result-grid" style="margin-bottom:var(--space-md)">
                   <div class="result-item">
-                    <h4>Effective WL margin per bag</h4>
+                    <h4>WL margin per bag</h4>
                     <div id="wlEffectiveMargEur" class="result-value">—</div>
                   </div>
                   <div class="result-item">
-                    <h4>Effective WL margin %</h4>
+                    <h4>WL margin %</h4>
                     <div id="wlEffectiveMargPct" class="result-value">—</div>
                   </div>
                   <div class="result-item">
-                    <h4>Opportunity cost of this slot</h4>
+                    <h4>WL profit, this batch</h4>
                     <div id="wlOpptyCost" class="result-value">—</div>
                   </div>
+                  <div class="result-item">
+                    <h4>Own-brand profit, same batch</h4>
+                    <div id="wlOwnBrandBatch" class="result-value">—</div>
+                  </div>
                 </div>
-                <div class="result-cost-highlight">
-                  <div id="wlNetMarginLabel" class="rch-label">Net margin vs. own-brand (per kg)</div>
+                <div class="result-cost-highlight" id="wlSlotGapBlock" style="display:none">
+                  <div class="rch-label">Profit difference, this batch</div>
                   <div id="wlNetMarginVal" class="rch-value">—</div>
                   <div id="wlNetMarginSub" class="rch-sub"></div>
                 </div>
@@ -1332,6 +1336,8 @@
       const elWLEffectiveMargEur = $('wlEffectiveMargEur');
       const elWLEffectiveMargPct = $('wlEffectiveMargPct');
       const elWLOpptyCost        = $('wlOpptyCost');
+      const elWLOwnBrandBatch    = $('wlOwnBrandBatch');
+      const elWLSlotGapBlock     = $('wlSlotGapBlock');
       const elWLNetMarginVal     = $('wlNetMarginVal');
       const elWLNetMarginSub     = $('wlNetMarginSub');
       const elWLInterpText       = $('wlInterpText');
@@ -1638,8 +1644,9 @@
 
           elWLResultsSection.style.display = '';
 
-          document.getElementById('wlNetMarginLabel').textContent =
-            ownBrandPrice > 0 ? 'Net margin vs. own-brand (per kg)' : 'Effective WL margin (per kg)';
+          const wlBatchProfit   = wlEffMargBag * bags;
+          const wlOwnBrandTotal = ownBrandPrice > 0 ? ownBrandMargBag * bags : null;
+          const wlBatchGap      = wlOwnBrandTotal !== null ? wlBatchProfit - wlOwnBrandTotal : null;
 
           elWLEffectiveMargEur.textContent = fmtEur(wlEffMargBag) + ' / bag';
           elWLEffectiveMargEur.className   = 'result-value ' + (
@@ -1649,29 +1656,33 @@
           elWLEffectiveMargPct.className   = 'result-value ' + (
             wlEffMargPct >= 60 ? 'val-positive' : wlEffMargPct >= 40 ? 'val-tight' : 'val-risk'
           );
-          elWLOpptyCost.textContent = ownBrandPrice > 0
-            ? fmtEur(wlOppTotal, 0) + ' total'
-            : '\u2014';
 
-          elWLNetMarginVal.textContent = fmtEur(ownBrandPrice > 0 ? wlNetPerKg : wlEffPerKg) + ' / kg';
-          elWLNetMarginVal.className   = 'rch-value ' + (
-            (ownBrandPrice > 0 ? wlNetPerKg : wlEffPerKg) >= 0 ? 'wl-net-positive' : 'wl-net-negative'
-          );
-          elWLNetMarginSub.textContent = ownBrandPrice > 0
-            ? (wlNetPerKg >= 0
-                ? fmtEur(wlNetPerKg) + '/kg above own-brand margin at ' + fmtEur(ownBrandPrice) + '/bag (' + fmtEur(ownBrandMargBag) + '/bag margin)'
-                : fmtEur(Math.abs(wlNetPerKg)) + '/kg below own-brand margin at ' + fmtEur(ownBrandPrice) + '/bag (' + fmtEur(ownBrandMargBag) + '/bag margin)')
-            : 'Enter your retail or wholesale price above to compare';
+          elWLOpptyCost.textContent = fmtEur(wlBatchProfit, 0);
+          elWLOpptyCost.className   = 'result-value ' + (wlBatchProfit >= 0 ? 'val-positive' : 'val-risk');
+
+          elWLOwnBrandBatch.textContent = wlOwnBrandTotal !== null ? fmtEur(wlOwnBrandTotal, 0) : '\u2014';
+          elWLOwnBrandBatch.className   = wlOwnBrandTotal !== null
+            ? 'result-value ' + (wlOwnBrandTotal >= 0 ? 'val-positive' : 'val-risk')
+            : 'result-value';
+
+          elWLSlotGapBlock.style.display = wlBatchGap !== null ? '' : 'none';
+          if (wlBatchGap !== null) {
+            elWLNetMarginVal.textContent = (wlBatchGap >= 0 ? '+' : '') + fmtEur(wlBatchGap, 0);
+            elWLNetMarginVal.className   = 'rch-value ' + (wlBatchGap >= 0 ? 'wl-net-positive' : 'wl-net-negative');
+            elWLNetMarginSub.textContent = wlBatchGap >= 0
+              ? 'WL earns ' + fmtEur(wlBatchGap, 0) + ' more per batch than own-brand at ' + fmtEur(ownBrandPrice) + '/bag'
+              : 'Own-brand earns ' + fmtEur(Math.abs(wlBatchGap), 0) + ' more per batch at ' + fmtEur(ownBrandPrice) + '/bag';
+          }
 
           let wlInterp;
           if (ownBrandPrice <= 0) {
             wlInterp = wlEffMargPct >= 55
-              ? 'Effective white label margin is ' + fmtPct(wlEffMargPct) + ' (' + fmtEur(wlEffPerKg) + '/kg) \u2014 healthy for a white label account. Enter your retail or wholesale price above to see whether this slot earns more as white label or own-brand.'
-              : 'Effective white label margin is ' + fmtPct(wlEffMargPct) + '. Enter your retail or wholesale price above to compare this white label deal against selling your own product.';
-          } else if (wlNetPerKg >= 0) {
-            wlInterp = 'This batch earns ' + fmtEur(wlNetPerKg) + '/kg more than selling own-brand at ' + fmtEur(ownBrandPrice) + '/bag \u2014 the slot is justified.';
+              ? 'WL margin is ' + fmtPct(wlEffMargPct) + ' \u2014 healthy for a white label account. Enter your retail or wholesale price above to see whether this slot earns more as white label or own-brand.'
+              : 'WL margin is ' + fmtPct(wlEffMargPct) + '. Enter your retail or wholesale price above to compare what this slot earns as white label vs. your own product.';
+          } else if (wlBatchGap >= 0) {
+            wlInterp = 'This slot earns ' + fmtEur(wlBatchGap, 0) + ' more per batch as white label than running your own product at ' + fmtEur(ownBrandPrice) + '/bag. The account is worth it at this price.';
           } else {
-            wlInterp = 'This batch earns ' + fmtEur(Math.abs(wlNetPerKg)) + '/kg less than selling own-brand at ' + fmtEur(ownBrandPrice) + '/bag. Running your own product in this slot would be more profitable.';
+            wlInterp = 'Running your own product in this slot would earn ' + fmtEur(Math.abs(wlBatchGap), 0) + ' more per batch at ' + fmtEur(ownBrandPrice) + '/bag. Either price the white label higher, or check whether the volume makes up for it over time.';
           }
           elWLInterpText.textContent = wlInterp;
 
